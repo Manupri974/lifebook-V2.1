@@ -663,7 +663,6 @@ async function initChat() {
     // 🔁 Chargement du template (questions & séquences)
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
-    console.log("📋 Questions disponibles :", questions);
 
     if (interviewId) {
       const { data, error } = await supabase
@@ -678,22 +677,12 @@ async function initChat() {
         return;
       }
 
+      // 🧠 Injection des réponses (dans reponses[])
       reponses = data.content;
 
-      // Forcer l'affichage du premier chapitre (évite doublon)
-      const chapId = sequenceParQuestion[0] || 1;
-      if (titreChapitres[chapId]) {
-        chapitreActuel = chapId;
-afficher("LifeBook", `**${titreChapitres[chapId]}**`, "bot chapitre");
-      }
-
+      // 🧼 Affichage uniquement des réponses (les questions seront gérées après)
       reponses.forEach((reponse, index) => {
-        const question = questions[index] || `Question ${index + 1}`;
-        afficher("LifeBook", question, "bot");
         afficher("Vous", reponse, "user");
-
-  historique.push({ role: "assistant", content: question });
-  historique.push({ role: "user", content: reponse });
 
         const seqId = sequenceParQuestion[index] || 1;
         if (!segments[seqId]) segments[seqId] = [];
@@ -701,21 +690,34 @@ afficher("LifeBook", `**${titreChapitres[chapId]}**`, "bot chapitre");
         sequenceCounts[seqId] = (sequenceCounts[seqId] || 0) + 1;
       });
 
+      // 🧭 Position actuelle = après les dernières réponses
       questionIndex = reponses.length;
+
+      // 🎯 Affiche chapitre (si on est en début de nouvelle séquence)
+      const chapId = sequenceParQuestion[questionIndex] || 1;
+      if (chapId !== chapitreActuel && titreChapitres[chapId]) {
+        chapitreActuel = chapId;
+        afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+      }
+
+      // ➕ Affiche la question suivante
+      afficherQuestion(questionIndex);
       miseAJourProgression();
+
     } else {
       // 🆕 Nouvelle interview
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
 
-      // Afficher chapitre 1 avant la première question
+      // Afficher le premier chapitre dès le début
       const chapId = sequenceParQuestion[0] || 1;
       if (titreChapitres[chapId]) {
         chapitreActuel = chapId;
         afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
       }
 
-      afficher("LifeBook", questions[0], "bot");
+      afficherQuestion(0);
+      miseAJourProgression();
     }
 
   } catch (err) {
