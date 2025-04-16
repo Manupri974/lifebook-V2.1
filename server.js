@@ -4,14 +4,11 @@ console.log("👋 Démarrage server.js...");
 import genererLivre from "./api/generer-livre.js";
 import exporterPdf from "./api/exporter-pdf.js";
 
-// 🧼 Init app
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// ✅ Autoriser plusieurs origines (CORS)
 const allowedOrigins = [
-  "https://lifebook-landing.vercel.app",
   "https://lifebook-v2-1.vercel.app"
 ];
 
@@ -31,11 +28,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Routes API
+// ✅ Routes actives
 app.post("/api/generer-livre", genererLivre);
 app.use("/api/exporter-pdf", exporterPdf);
 
-// ✅ Démarrage du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("✅ Serveur lancé correctement sur le port", PORT);
