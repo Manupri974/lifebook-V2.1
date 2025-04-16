@@ -19,13 +19,11 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // ✅ Middleware CORS avec log de debug
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log("🌐 Requête entrante depuis :", origin);
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-    console.log("✅ Origin autorisée :", origin);
   } else {
-    console.warn("⛔️ Origin refusée :", origin);
+
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
