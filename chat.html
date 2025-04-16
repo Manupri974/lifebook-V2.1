@@ -354,7 +354,7 @@ async function sendMessage() {
   input.style.height = "auto";
 }
 async function genererLivre() {
-  if (!historique || historique.length < 4) {
+  if (!reponses || reponses.length < 4) {
     alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
     return;
   }
@@ -369,29 +369,27 @@ async function genererLivre() {
   try {
     console.log("🚀 Étape 1 : Construction des segments...");
 
+    // ✅ Reconstruction automatique des segments à partir de reponses + sequenceParQuestion
     const segments = {};
-    let current = "1";
-
-    for (const msg of historique) {
-      if (msg.role === "assistant" && msg.content.includes("### Séquence")) {
-        const match = msg.content.match(/###\s*Séquence\s*:?[\s]*(\d+)/i);
-        if (match) current = match[1];
-      }
-      if (msg.role === "user") {
-        if (!segments[current]) segments[current] = [];
-        segments[current].push(msg.content.trim());
-      }
+    for (let i = 0; i < reponses.length; i++) {
+      const seq = sequenceParQuestion?.[i]?.toString() || "1";
+      if (!segments[seq]) segments[seq] = [];
+      if (reponses[i]?.trim()) segments[seq].push(reponses[i].trim());
     }
 
-    console.log("✅ Segments construits :", segments);
+    console.log("✅ Segments reconstruits :", segments);
 
     const payload = {
       segments,
       perso,
       questions,
-      titreChapitres
+      titreChapitres,
+      sequenceParQuestion // ✅ On l'envoie au backend pour cibler les bonnes questions
     };
 
+    console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
+
+    // ✅ Envoi au backend
     console.log("📤 Étape 2 : Envoi au backend...");
     const response = await fetch(`${API_BASE}/api/generer-livre`, {
       method: "POST",
