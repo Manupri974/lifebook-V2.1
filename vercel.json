@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/chat", "destination": "/chat.html" },
+    { "source": "/chat.html", "destination": "/chat.html" }
+  ],
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 300
+    },
+    "api/generer-livre.js": {
+      "maxDuration": 60
+    },
+    "api/plan.js": {
+      "maxDuration": 60
+    }
+  }
+}

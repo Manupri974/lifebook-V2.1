@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeBook – Le livre de vos souvenirs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #d5b8ff, #ffdeeb);
+      color: #444;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+    header h1 {
+      color: #7e3af2;
+      font-size: 1.6em;
+    }
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: #7e3af2;
+    }
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .menu-toggle span {
+      height: 3px;
+      width: 25px;
+      background: #7e3af2;
+      margin: 4px 0;
+      border-radius: 3px;
+    }
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 30px;
+      gap: 40px;
+    }
+    .hero-text {
+      flex: 1 1 400px;
+      max-width: 600px;
+    }
+    .hero-text h2 {
+      font-size: 2.5em;
+      color: #6a00ff;
+    }
+    .hero-text p {
+      font-size: 1.1em;
+      color: #555;
+    }
+    .cta a {
+      background: #6a00ff;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .cta a:hover {
+      background: #5800d1;
+    }
+    .hero img {
+      flex: 1 1 300px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .section {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    .steps, .pricing {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+    }
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .card h3 {
+      color: #6a00ff;
+      margin-top: 15px;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9em;
+      padding: 30px;
+      background: #f4f4f4;
+      color: #888;
+    }
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        background: white;
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      nav.open {
+        display: flex;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>LifeBook</h1>
+  <div class="menu-toggle" id="toggleMenu">
+    <span></span><span></span><span></span>
+  </div>
+  <nav id="mainNav">
+    <a href="#accueil">Accueil</a>
+    <a href="#fonctionnement">Fonctionnement</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#" class="btnCommencer">Commencer</a>
+    <a href="/auth.html" id="monCompteLink" style="display:none;">Mon compte</a>
+  </nav>
+</header>
+
+<section class="hero" id="accueil">
+  <div class="hero-text">
+    <h2>Chaque vie mérite d’être racontée.<br>Créez le livre de la vôtre ou de vos proches.</h2>
+    <p>LifeBook, notre intelligence artificielle, vous guide pas à pas pour transformer une vie en un livre intime et émouvant.</p>
+    <div class="cta">
+      <a href="#" class="btnCommencer">Commencer maintenant</a>
+    </div>
+  </div>
+  <img src="https://raw.githubusercontent.com/Manupri974/lifebook-landing/refs/heads/main/assets/Image%20haut%20de%20pager.png" alt="Famille">
+</section>
+
+<section class="section" id="fonctionnement">
+  <h2 style="text-align:center;">Comment ça marche ?</h2>
+  <div class="steps">
+    <div class="card">
+      <img src="https://raw.githubusercontent.com/Manupri974/lifebook-landing/refs/heads/main/assets/Image%20encart%20interview.png" alt="Interview">
+      <h3>1. Interview</h3>
+      <p>Avancez à votre rythme. Plus vous partagez de souvenirs, plus le récit sera fidèle à votre histoire.</p>
+    </div>
+    <div class="card">
+      <img src="https://raw.githubusercontent.com/Manupri974/lifebook-landing/refs/heads/main/assets/Image%20redaction.png" alt="Rédaction">
+      <h3>2. Rédaction</h3>
+      <p>L'IA transforme vos réponses en un récit fluide, littéraire et personnel.</p>
+    </div>
+    <div class="card">
+      <img src="https://raw.githubusercontent.com/Manupri974/lifebook-landing/refs/heads/main/assets/Image%20encart%20livraison.png" alt="Livre">
+      <h3>3. Votre livre</h3>
+      <p>Téléchargez votre e-book personnalisé ou demandez une version imprimée.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tarifs">
+  <h2 style="text-align:center;">Nos offres</h2>
+  <div class="pricing">
+    <div class="card">
+      <h3>Gratuite</h3>
+      <p>Interview + e-book PDF simple<br><strong>0 €</strong></p>
+    </div>
+    <div class="card">
+      <h3>Premium</h3>
+      <p>Mise en page élégante, couverture personnalisée<br><strong>9 €</strong></p>
+    </div>
+    <div class="card">
+      <h3>Deluxe</h3>
+      <p>Version imprimée livrée chez vous<br><strong>29 €</strong></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © LifeBook 2025 • hello@lifebook.fr • Tous droits réservés
+</footer>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+  const supabase = createClient(
+    'https://qgmxclxahaqnvvxhgcms.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
+  );
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const boutonsCommencer = document.querySelectorAll('.btnCommencer');
+    const monCompteLink = document.getElementById("monCompteLink");
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      monCompteLink.style.display = "inline";
+      monCompteLink.href = "/account.html";
+    }
+    boutonsCommencer.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (session) {
+      window.location.href = "/doctype.html";
+    } else {
+      window.location.href = "/auth.html?redirect=doctype.html";
+    }
+  });
+});
+    document.getElementById("toggleMenu").addEventListener("click", () => {
+      document.getElementById("mainNav").classList.toggle("open");
+    });
+  });
+</script>
+</body>
+</html>

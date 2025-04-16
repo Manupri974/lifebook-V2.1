@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview LifeBook</title>
+
+  <!-- Librairies externes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Styles globaux -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #f3e8ff, #fff0f5);
+      color: #333;
+    }
+
+    header {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header a {
+      text-decoration: none;
+      color: #a347ba;
+      font-weight: 600;
+      font-size: 1.4em;
+    }
+
+    #chat {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      line-height: 1.4em;
+    }
+
+    .bot {
+      background: #f3e8fa;
+      color: #5a2a82;
+      text-align: left;
+    }
+
+    .user {
+      background: #e1f5e8;
+      color: #21543d;
+      text-align: right;
+    }
+
+    #progression {
+      margin: 20px 0 10px;
+      font-size: 0.9em;
+      text-align: right;
+      color: #999;
+    }
+
+    .input-group {
+      position: relative;
+      margin-top: 10px;
+    }
+    #speechButton {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      background: #d3a6e4;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      color: white;
+      font-size: 0.9em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.3s ease;
+    }
+
+    #speechButton:hover {
+      background: #b674d3;
+    }
+
+    #speechButton.recording {
+      background: #a347ba;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .button-group button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #a347ba;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .button-group button i {
+      font-size: 1em;
+    }
+
+    .button-group button:hover {
+      background: #912ca3;
+    }
+
+    #waveform {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #a347ba 50%, #fff 50%);
+      background-size: 20px 100%;
+      background-repeat: repeat-x;
+      animation: wave 1s linear infinite;
+      display: none;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    @keyframes wave {
+      0% { background-position: 0 0; }
+      100% { background-position: 20px 0; }
+    }
+
+    #messageStatus {
+      margin-top: 10px;
+      min-height: 20px;
+      font-size: 0.9em;
+    }
+
+    /* Markdown beautification */
+    .message.bot h1,
+    .message.bot h2 {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #6b1e8a;
+      margin: 18px 0 6px;
+      border-bottom: 2px solid #d9b3e4;
+      padding-bottom: 4px;
+    }
+
+    .message.bot h3 {
+      font-size: 1em;
+      font-weight: 600;
+      color: #8747a0;
+      margin: 10px 0 4px;
+    }
+
+    .message.bot p {
+      margin: 6px 0;
+      line-height: 1.6em;
+    }
+
+    .message.bot ul {
+      padding-left: 20px;
+      margin: 6px 0 12px;
+    }
+
+    .message.bot li {
+      margin-bottom: 6px;
+      line-height: 1.5em;
+    }
+
+    .message.bot strong {
+      font-weight: bold;
+      color: #4b145c;
+    }
+      textarea#userInput {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    resize: none;
+    line-height: 1.4em;
+    overflow: hidden;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="/index.html">LifeBook</a>
+  </header>
+
+  <div id="chat">
+    <div id="messages"></div>
+    <div id="progression">Question 1 / 89</div>
+    <div class="input-group">
+<textarea id="userInput" placeholder="Votre réponse..." rows="1"></textarea>
+      <button id="speechButton"><i class="fas fa-microphone"></i></button>
+    </div>
+    <div class="button-group">
+      <button id="sendBtn"><i class="fas fa-paper-plane"></i> Envoyer</button>
+  <button id="planBtn"><i class="fas fa-forward"></i> Générer plan</button>
+      <button id="generateBtn"><i class="fas fa-book"></i> Générer livre</button>
+      <button id="saveButton"><i class="fas fa-save"></i> Sauvegarder</button>
+    </div>
+    <div id="waveform"></div>
+    <div id="messageStatus"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+    const supabase = createClient(
+      'https://qgmxclxahaqnvvxhgcms.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
+    );
+
+let historique = [];
+let templateParams = {};
+let interviewId = null;
+let recognition;
+let recording = false;
+let sequenceCounts = {};         // ✅ Pour compter les messages par séquence
+let segments = {};               // ✅ Pour stocker les messages par séquence
+let questionIndex = 0;          // ← nombre de questions déjà posées
+
+    const status = document.getElementById("messageStatus");
+
+function afficher(auteur, texte, classe) {
+  const msg = document.createElement("div");
+  msg.className = "message " + classe;
+
+  // Si c'est une réponse bot, on interprète le Markdown
+  if (classe === "bot") {
+    msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
+  } else {
+    msg.innerHTML = `<strong>${auteur} :</strong> ${texte}`;
+  }
+
+  document.getElementById("messages").appendChild(msg);
+  document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+}
+    function miseAJourProgression() {
+      const count = historique.filter(m => m.role === "user").length;
+      document.getElementById("progression").innerText = `Question ${count + 1} / 89`;
+    }
+async function genererPlan() {
+  const btn = document.getElementById("planBtn");
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Génération...`;
+
+  try {
+    const response = await fetch("https://lifebook-docker.onrender.com/api/plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ historique })
+    });
+
+    const data = await response.json();
+    console.log("Réponse plan:", data); // 🔍 debug
+
+    if (!data || !data.texte) throw new Error("Réponse invalide");
+
+    const markdown = data.texte.trim();
+    const html = marked.parse(markdown); // ✅ transformer en HTML pour affichage
+
+    afficher("Plan proposé", html, "bot");         // ✅ affichage visuel
+    historique.push({ role: "assistant", content: markdown }); // ✅ sauvegarde brut markdown
+
+  } catch (err) {
+    console.error("Erreur lors de la génération du plan:", err);
+    alert("Erreur lors de la génération du plan. Voir la console.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fas fa-forward"></i> Générer plan`;
+  }
+}
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  afficher("Vous", text, "user");
+  historique.push({ role: "user", content: text });
+
+  // ✅ Compter uniquement les messages utilisateur pour identifier la séquence correcte
+  const userMessagesCount = historique.filter(m => m.role === "user").length;
+  const currentSequenceId = sequenceParQuestion[userMessagesCount - 1] || 1;
+
+  // 🔢 Initialiser compteur de messages par séquence si besoin
+  if (!sequenceCounts[currentSequenceId]) sequenceCounts[currentSequenceId] = 0;
+
+  // 📦 Stocker dans le segment de la séquence
+  if (!segments[currentSequenceId]) segments[currentSequenceId] = [];
+  segments[currentSequenceId].push(text);
+  sequenceCounts[currentSequenceId]++;
+
+  console.log(`✅ Réponse ajoutée à la séquence ${currentSequenceId}, total : ${sequenceCounts[currentSequenceId]}`);
+
+  // 🧼 Nettoyage du champ de saisie
+  input.value = "";
+
+  try {
+    const query = new URLSearchParams(templateParams).toString();
+    const response = await fetch(`https://lifebook-docker.onrender.com/api/chat?${query}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: historique })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Erreur API OpenAI :", errorText);
+      afficher("LifeBook", "❌ L’IA n’a pas répondu correctement. Réessayez.", "bot");
+      return;
+    }
+
+    const data = await response.json();
+    let botText = data.reply;
+
+    // 🔍 Nettoyer l’étiquette de séquence éventuelle
+    const texteNettoye = botText.replace(/^###\s*Séquence\s*:?[\s]*\d+/gi, "").trim();
+
+    // 📥 Stocker proprement dans l'historique
+    historique.push({
+      role: "assistant",
+      content: `### Séquence : ${currentSequenceId}\n\n${botText}`
+    });
+
+    // 💬 Affichage
+    afficher("LifeBook", texteNettoye, "bot");
+    miseAJourProgression();
+
+    // 🔊 Lecture vocale
+    fetch("https://lifebook-docker.onrender.com/api/voice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: texteNettoye })
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const audio = new Audio(URL.createObjectURL(blob));
+      audio.play();
+    });
+
+  } catch (err) {
+    console.error("❌ Erreur inattendue :", err);
+    afficher("LifeBook", "⚠️ Une erreur s’est produite. Vérifiez votre connexion ou réessayez.", "bot");
+  }
+}
+async function genererLivre() {
+  if (!historique || historique.length < 4) {
+    alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
+    return;
+  }
+
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Génération...`;
+
+  const API_BASE = "https://lifebook-docker.onrender.com";
+  const perso = new URLSearchParams(window.location.search).get("perso") || "il";
+
+  try {
+    console.log("🚀 Étape 1 : Construction des segments...");
+
+    const segments = {};
+    let current = "1";
+
+    for (const msg of historique) {
+      if (msg.role === "assistant" && msg.content.includes("### Séquence")) {
+        const match = msg.content.match(/###\s*Séquence\s*:?[\s]*(\d+)/i);
+        if (match) current = match[1];
+      }
+      if (msg.role === "user") {
+        if (!segments[current]) segments[current] = [];
+        segments[current].push(msg.content.trim());
+      }
+    }
+
+    console.log("✅ Segments construits :", segments);
+
+    console.log("📤 Étape 2 : Envoi au backend...");
+    const response = await fetch(`${API_BASE}/api/generer-livre`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ segments, perso }) // ✅ ici
+    });
+
+    if (!response.ok) {
+      alert(`❌ Erreur du serveur (${response.status})`);
+      return;
+    }
+
+    const rawText = await response.text();
+    console.log("📦 Réponse brute reçue :", rawText.slice(0, 300));
+
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (err) {
+      console.error("❌ Erreur de parsing JSON :", err);
+      alert("⚠️ La réponse du serveur n’a pas pu être interprétée. Regarde la console.");
+      return;
+    }
+    if (!data || !data.texte || data.texte.trim().length < 100) {
+      alert("❌ Le texte généré est trop court. Vérifie les réponses.");
+      return;
+    }
+
+    const texteFinal = data.texte.trim();
+    console.log("🖨️ Étape 3 : Génération du PDF stylisé via backend...");
+
+    const pdfResponse = await fetch(`${API_BASE}/api/exporter-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texte: texteFinal })
+    });
+
+    if (!pdfResponse.ok) {
+      console.error("❌ PDF non généré :", pdfResponse.status);
+      alert("❌ Le serveur n’a pas réussi à générer le PDF.");
+      return;
+    }
+
+    const blob = await pdfResponse.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "LifeBook.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    alert("📘 Livre généré avec succès !");
+  } catch (error) {
+    console.error("❌ Erreur lors de la génération :", error);
+    alert("❌ Une erreur est survenue pendant la génération. Voir la console.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  }
+}
+    async function sauvegarder() {
+  status.textContent = "⏳ Sauvegarde en cours...";
+  status.style.color = "black";
+
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (!session || error) {
+    status.textContent = "❌ Non connecté.";
+    status.style.color = "red";
+    return;
+  }
+
+  const user = session.user;
+  let result;
+
+  if (interviewId) {
+    result = await supabase
+      .from("responses")
+      .update({ content: historique })
+      .eq("id", interviewId);
+  } else {
+// 🔁 Récupère tous les paramètres de l’URL (sauf id)
+const urlParams = new URLSearchParams(window.location.search);
+const allParams = {};
+for (const [key, value] of urlParams.entries()) {
+  if (key !== "id") allParams[key] = value;
+}
+
+result = await supabase
+  .from("responses")
+  .insert([{
+    user_id: user.id,
+    content: historique,
+    params: allParams // ✅ nouveau champ
+  }])
+  .select("id")
+  .single();
+
+if (result.data?.id) {
+  interviewId = result.data.id;
+
+  const currentParams = new URLSearchParams(window.location.search);
+  currentParams.set("id", interviewId);
+
+  const newUrl = `${window.location.pathname}?${currentParams.toString()}`;
+  history.replaceState(null, "", newUrl);
+}
+  }
+
+  if (result.error) {
+    status.textContent = "❌ Erreur : " + result.error.message;
+    status.style.color = "red";
+  } else {
+    status.textContent = "✅ Interview sauvegardée avec succès !";
+    status.style.color = "green";
+  }
+
+  setTimeout(() => status.textContent = "", 3000);
+}
+let isRecording = false;
+let finalText = "";
+
+function toggleRecording() {
+  const button = document.getElementById("speechButton");
+  const inputField = document.getElementById("userInput");
+  const waveform = document.getElementById("waveform");
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Reconnaissance vocale non supportée sur ce navigateur.");
+    return;
+  }
+
+  if (!recognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript;
+        }
+      }
+
+      finalText += transcript;
+      inputField.value = finalText.trim();
+      inputField.dispatchEvent(new Event("input")); // pour réajuster la hauteur
+    };
+
+    recognition.onerror = (event) => {
+      console.error("❌ Erreur vocale :", event.error);
+      stopRecording();
+    };
+
+    recognition.onend = () => {
+      if (isRecording) {
+        console.log("🔁 Reco terminée, tentative de reprise...");
+        recognition.start();
+      } else {
+        stopRecording();
+      }
+    };
+  }
+
+  function stopRecording() {
+    isRecording = false;
+    button.classList.remove("recording");
+    waveform.style.display = "none";
+  }
+
+  if (!isRecording) {
+    finalText = "";
+    inputField.value = "";
+    recognition.start();
+    isRecording = true;
+    button.classList.add("recording");
+    waveform.style.display = "block";
+  } else {
+    recognition.stop();
+    stopRecording();
+  }
+}
+    
+let sequenceParQuestion = [];
+    
+async function chargerTemplateSequence({ type, qui, age, perso, format }) {
+  const nomFichier = `./templates/${type}-${qui}-${age}-${perso}-${format}.js`;
+  try {
+    const module = await import(nomFichier);
+    sequenceParQuestion = module.sequenceParQuestion || [];
+    console.log("✅ Séquences chargées :", sequenceParQuestion);
+  } catch (err) {
+    console.error("❌ Impossible de charger le template :", nomFichier, err);
+    sequenceParQuestion = [];
+  }
+}
+async function initChat() {
+  console.log("🚀 initChat lancé");
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    interviewId = params.get("id");
+
+    if (interviewId) {
+      // 🔁 Cas : chargement d'une interview existante
+      const { data, error } = await supabase
+        .from("responses")
+        .select("content, params")
+        .eq("id", interviewId)
+        .single();
+
+      if (data?.params && typeof data.params === "object") {
+        const currentParams = new URLSearchParams(window.location.search);
+
+        for (const [key, value] of Object.entries(data.params)) {
+          if (!currentParams.has(key)) currentParams.set(key, value);
+        }
+
+        currentParams.set("id", interviewId);
+        const newUrl = `${window.location.pathname}?${currentParams.toString()}`;
+        history.replaceState(null, "", newUrl);
+        console.log("🔁 URL mise à jour avec :", newUrl);
+
+        // ✅ Rechargement du bon template
+        templateParams = {
+          type: currentParams.get("type") || "bio",
+          qui: currentParams.get("qui") || "moi",
+          age: currentParams.get("age") || "18",
+          perso: currentParams.get("perso") || "il",
+          format: currentParams.get("format") || "court",
+        };
+        await chargerTemplateSequence(templateParams);
+      }
+
+      if (error || !data?.content || !Array.isArray(data.content)) {
+        afficher("LifeBook", "❌ Impossible de charger l’interview existante. Essayez à nouveau plus tard.", "bot");
+        console.error("⚠️ Erreur Supabase :", error);
+        return;
+      }
+
+      historique = data.content;
+
+      // 🧼 Affichage propre de l'historique
+      historique.forEach(msg => {
+        const texte = (msg.content || "").replace(/^###\s*Séquence\s*:?[\s]*\d+/gi, "").trim();
+
+        if (msg.role === "assistant" && msg.content.includes("## Chapitre")) {
+          afficher("Plan proposé", marked.parse(texte), "bot");
+        } else {
+          const auteur = msg.role === "assistant" ? "LifeBook" : "Vous";
+          afficher(auteur, texte, msg.role);
+        }
+      });
+
+      // 🔢 Mise à jour progression
+      questionIndex = historique.filter(m => m.role === "user").length;
+      miseAJourProgression();
+
+      // 🧩 Reconstruction des séquences
+      sequenceCounts = {};
+      segments = {};
+      let currentSequenceId = 1;
+      let userIndex = 0;
+
+      for (const msg of historique) {
+        if (msg.role === "user") {
+          const seqId = sequenceParQuestion[userIndex] || 1;
+          if (!segments[seqId]) segments[seqId] = [];
+          segments[seqId].push(msg.content.trim());
+          sequenceCounts[seqId] = (sequenceCounts[seqId] || 0) + 1;
+          userIndex++;
+        } else if (msg.role === "assistant" && msg.content.includes("### Séquence")) {
+          const match = msg.content.match(/###\s*Séquence\s*:?[\s]*(\d+)/i);
+          if (match) currentSequenceId = match[1];
+        }
+      }
+
+      console.log("🔁 Séquences reconstituées :", segments);
+      console.log("📊 Compteurs par séquence :", sequenceCounts);
+
+    } else {
+      // 🆕 Cas : première utilisation
+      const initialParams = new URLSearchParams(window.location.search);
+      templateParams = {
+        type: initialParams.get("type") || "bio",
+        qui: initialParams.get("qui") || "moi",
+        age: initialParams.get("age") || "18",
+        perso: initialParams.get("perso") || "il",
+        format: initialParams.get("format") || "court",
+      };
+
+      await chargerTemplateSequence(templateParams);
+      console.log("🧠 Template initial chargé :", templateParams);
+
+      const response = await fetch(`https://lifebook-docker.onrender.com/api/chat?type=${templateParams.type}&qui=${templateParams.qui}&age=${templateParams.age}&perso=${templateParams.perso}&format=${templateParams.format}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [] })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Erreur dans la réponse OpenAI :", errorText);
+        afficher("LifeBook", "❌ L’IA n’a pas répondu correctement. Réessayez.", "bot");
+        return;
+      }
+
+      const data = await response.json();
+      if (!data.reply || typeof data.reply !== "string") {
+        afficher("LifeBook", "❌ L’IA n’a pas répondu correctement. Réessayez.", "bot");
+        return;
+      }
+
+      afficher("LifeBook", data.reply, "bot");
+      historique.push({ role: "assistant", content: data.reply });
+
+      fetch("https://lifebook-docker.onrender.com/api/voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: data.reply })
+      })
+        .then(res => res.blob())
+        .then(blob => {
+          const audio = new Audio(URL.createObjectURL(blob));
+          audio.play();
+        })
+        .catch(err => {
+          console.error("Erreur audio :", err);
+        });
+    }
+  } catch (err) {
+    console.error("❌ Erreur globale dans initChat :", err);
+    afficher("LifeBook", "⚠️ Une erreur s’est produite au lancement du chat. Vérifiez votre connexion ou réessayez plus tard.", "bot");
+  }
+}
+
+// ✅ Listeners bouton et clavier
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("generateBtn").addEventListener("click", genererLivre);
+document.getElementById("saveButton").addEventListener("click", sauvegarder);
+document.getElementById("speechButton").addEventListener("click", toggleRecording);
+
+const planBtn = document.getElementById("planBtn");
+if (planBtn) {
+  planBtn.addEventListener("click", genererPlan);
+}
+
+document.getElementById("userInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
+
+// ✅ Lancement du chat à la fin
+window.onload = initChat;
+
+// ✅ Auto-resize input (si présent au moment du chargement)
+const input = document.getElementById("userInput");
+if (input) {
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+  });
+
+  window.addEventListener("load", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+  });
+}
+  </script>
+
+</div> <!-- FIN DE #chat -->
+</body>
+</html>
