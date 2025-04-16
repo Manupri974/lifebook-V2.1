@@ -548,20 +548,18 @@ async function chargerTemplateSequence({ type, qui, age, format }) {
   const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`;
   try {
     const module = await import(nomFichier);
-
-    // ✅ Ajoute cette ligne
-    questions = module.questions || [];
-
-    // ✅ Ligne déjà présente
     sequenceParQuestion = module.sequenceParQuestion || [];
+    questions = module.questions || []; // ✅ on ajoute cette ligne
+    console.log("✅ Séquences chargées :", sequenceParQuestion);
 
-    console.log("✅ Template chargé avec", questions.length, "questions");
+    console.log("✅ Questions chargées :", questions);
   } catch (err) {
     console.error("❌ Impossible de charger le template :", nomFichier, err);
-    questions = [];
     sequenceParQuestion = [];
+    questions = []; // pour éviter d’être undefined
   }
 }
+
 function afficher(auteur, texte, classe) {
   if (!texte) {
     console.warn("❌ Aucun texte à afficher pour :", auteur);
@@ -605,6 +603,7 @@ async function initChat() {
     // 🔁 Chargement du template (questions & séquences)
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
+    console.log("📋 Questions disponibles :", questions);
 
     if (interviewId) {
       const { data, error } = await supabase
