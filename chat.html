@@ -660,7 +660,7 @@ async function initChat() {
       format: params.get("format") || "court",
     };
 
-    // 🔁 Chargement du template (questions & séquences)
+    // 🔁 Chargement du template
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
 
@@ -677,15 +677,16 @@ async function initChat() {
         return;
       }
 
-      // 🧠 Injection des réponses
+      // 🧠 Réponses récupérées
       reponses = data.content;
+      questionIndex = reponses.length;
 
-      // 🧼 Réaffiche toutes les questions et réponses existantes
-      reponses.forEach((reponse, index) => {
-        const question = questions[index] || `Question ${index + 1}`;
-        const chapId = sequenceParQuestion[index] || 1;
+      for (let i = 0; i < reponses.length; i++) {
+        const question = questions[i] || `Question ${i + 1}`;
+        const reponse = reponses[i];
+        const chapId = sequenceParQuestion[i] || 1;
 
-        // Affiche le chapitre si c’est une nouvelle séquence
+        // Afficher le chapitre si on entre dans un nouveau
         if (chapId !== chapitreActuel && titreChapitres[chapId]) {
           chapitreActuel = chapId;
           afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
@@ -694,15 +695,18 @@ async function initChat() {
         afficher("LifeBook", question, "bot");
         afficher("Vous", reponse, "user");
 
-        // Stocker le segment
         if (!segments[chapId]) segments[chapId] = [];
         segments[chapId].push(reponse);
         sequenceCounts[chapId] = (sequenceCounts[chapId] || 0) + 1;
-      });
+      }
 
-      // ➕ Passe à la prochaine question (si pas terminé)
-      questionIndex = reponses.length;
       if (questionIndex < questions.length) {
+        const nextChapId = sequenceParQuestion[questionIndex] || 1;
+        if (nextChapId !== chapitreActuel && titreChapitres[nextChapId]) {
+          chapitreActuel = nextChapId;
+          afficher("Chapitre", `**${titreChapitres[nextChapId]}**`, "bot chapitre");
+        }
+
         afficherQuestion(questionIndex);
         miseAJourProgression();
       } else {
@@ -716,7 +720,6 @@ async function initChat() {
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
 
-      // Affiche le premier chapitre si défini
       const chapId = sequenceParQuestion[0] || 1;
       if (titreChapitres[chapId]) {
         chapitreActuel = chapId;
@@ -732,6 +735,7 @@ async function initChat() {
     afficher("LifeBook", "⚠️ Une erreur s’est produite au lancement du chat.", "bot");
   }
 }
+
 // ✅ Listeners bouton et clavier
 document.getElementById("sendBtn").addEventListener("click", sendMessage);
 document.getElementById("generateBtn").addEventListener("click", genererLivre);
