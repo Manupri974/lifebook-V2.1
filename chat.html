@@ -256,6 +256,7 @@
     );
 
 let questions = [];
+let titreChapitres = {};
 let reponses = [];
 let templateParams = {};
 let interviewId = null;
@@ -554,19 +555,20 @@ function toggleRecording() {
     
 let sequenceParQuestion = [];
     
+let titreChapitres = {}; // 🔁 à déclarer globalement aussi si ce n’est pas encore fait
+
 async function chargerTemplateSequence({ type, qui, age, format }) {
   const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`;
   try {
     const module = await import(nomFichier);
     sequenceParQuestion = module.sequenceParQuestion || [];
-    questions = module.questions || []; // ✅ on ajoute cette ligne
+    titreChapitres = module.titreChapitres || {}; // ✅ on récupère aussi les titres
     console.log("✅ Séquences chargées :", sequenceParQuestion);
-
-    console.log("✅ Questions chargées :", questions);
+    console.log("✅ Titres de chapitres :", titreChapitres);
   } catch (err) {
     console.error("❌ Impossible de charger le template :", nomFichier, err);
     sequenceParQuestion = [];
-    questions = []; // pour éviter d’être undefined
+    titreChapitres = {};
   }
 }
 
