@@ -605,21 +605,23 @@ function afficher(auteur, texte, classe) {
     return;
   }
 
+  // ✅ Assainissement du contenu pour éviter l’erreur marked()
+  let contenu;
+  if (typeof texte === "string") {
+    contenu = texte;
+  } else if (typeof texte?.content === "string") {
+    contenu = texte.content;
+  } else {
+    contenu = JSON.stringify(texte, null, 2);
+  }
+
   const msg = document.createElement("div");
   msg.className = "message " + classe;
-  msg.innerHTML = `<strong>${auteur}</strong><br>${marked.parse(texte)}`;
+  msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(contenu)}`;
 
   const container = document.getElementById("messages");
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
-
-  // ✅ Enregistrement dans l'historique
-  if (classe === "bot" || classe === "user") {
-    historique.push({
-      role: classe === "bot" ? "assistant" : "user",
-      content: texte
-    });
-  }
 }
 
 function afficherQuestion(index) {
