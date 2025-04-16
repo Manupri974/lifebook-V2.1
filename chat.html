@@ -277,11 +277,13 @@ let titreChapitres = {};
 let reponses = [];
 let templateParams = {};
 let interviewId = null;
+let historique = []; // ✅ historique des échanges
 let recognition;
 let recording = false;
 let sequenceCounts = {};         // ✅ Pour compter les messages par séquence
 let segments = {};               // ✅ Pour stocker les messages par séquence
 let questionIndex = 0;          // ← nombre de questions déjà posées
+
 
     const status = document.getElementById("messageStatus");
 function miseAJourProgression() {
@@ -604,13 +606,20 @@ function afficher(auteur, texte, classe) {
 
   const msg = document.createElement("div");
   msg.className = "message " + classe;
-  msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
+  msg.innerHTML = `<strong>${auteur}</strong><br>${marked.parse(texte)}`;
 
   const container = document.getElementById("messages");
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
+
+  // ✅ Enregistrement dans l'historique
+  if (classe === "bot" || classe === "user") {
+    historique.push({
+      role: classe === "bot" ? "assistant" : "user",
+      content: texte
+    });
+  }
 }
-  let chapitreActuel = null; // 🔄 à placer une seule fois en global si pas encore fait
 
 function afficherQuestion(index) {
   const question = questions[index];
@@ -679,6 +688,9 @@ afficher("LifeBook", `**${titreChapitres[chapId]}**`, "bot chapitre");
         const question = questions[index] || `Question ${index + 1}`;
         afficher("LifeBook", question, "bot");
         afficher("Vous", reponse, "user");
+
+  historique.push({ role: "assistant", content: question });
+  historique.push({ role: "user", content: reponse });
 
         const seqId = sequenceParQuestion[index] || 1;
         if (!segments[seqId]) segments[seqId] = [];
