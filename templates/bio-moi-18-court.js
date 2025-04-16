@@ -110,3 +110,6 @@ export const questionsParChapitre = {
     "Qu’aimeriez-vous que votre futur vous apporte ?"
   ]
 };
+export const questions = Object.values(questionsParChapitre).flat();
+export const sequenceParQuestion = Object.entries(questionsParChapitre)
+  .flatMap(([chapitre, liste]) => Array(liste.length).fill(Number(chapitre)));
