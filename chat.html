@@ -330,6 +330,7 @@ async function sendMessage() {
 
   // Enregistre la réponse
   reponses[questionIndex] = text;
+  historique.push({ role: "user", content: text }); // 🔁 on enregistre dans historique aussi
 
   // Affiche dans l'interface
   afficher("Vous", text, "user");
@@ -337,7 +338,6 @@ async function sendMessage() {
   // Passe à la question suivante
   questionIndex++;
 
-  // Si c’est la fin du questionnaire
   if (questionIndex >= questions.length) {
     afficher("LifeBook", "✅ Vous avez terminé toutes les questions ! Vous pouvez maintenant générer le livre.", "bot");
     input.disabled = true;
@@ -353,7 +353,6 @@ async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
 }
-
 async function genererLivre() {
   if (!historique || historique.length < 4) {
     alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
@@ -638,10 +637,8 @@ function afficherQuestion(index) {
     afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
   }
 
-  // ❌ Ne réaffiche pas si la réponse existe déjà
-  if (!reponses[index]) {
-    afficher("LifeBook", question, "bot");
-  }
+  historique.push({ role: "assistant", content: question }); // 🔁 on enregistre la question aussi
+  afficher("LifeBook", question, "bot");
 
   input.value = reponses[index] || "";
   input.focus();
@@ -677,31 +674,34 @@ async function initChat() {
         return;
       }
 
-      reponses = data.content;
-      questionIndex = reponses.length;
+      historique = data.content;
+      reponses = [];
+      questionIndex = 0;
 
-      let dernierChapitre = null;
+      let chapitreCourant = null;
 
-      for (let i = 0; i < reponses.length; i++) {
-        const question = questions[i] || `Question ${i + 1}`;
-        const reponse = reponses[i];
-        const chapId = sequenceParQuestion[i] || 1;
-
-        if (chapId !== dernierChapitre && titreChapitres[chapId]) {
-          afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
-          dernierChapitre = chapId;
+      for (const msg of historique) {
+        const contenu = msg.content;
+        if (msg.role === "assistant") {
+          afficher("LifeBook", contenu, "bot");
+        } else if (msg.role === "user") {
+          afficher("Vous", contenu, "user");
+          reponses[questionIndex] = contenu;
+          const chapId = sequenceParQuestion[questionIndex] || 1;
+          if (!segments[chapId]) segments[chapId] = [];
+          segments[chapId].push(contenu);
+          sequenceCounts[chapId] = (sequenceCounts[chapId] || 0) + 1;
+          questionIndex++;
         }
-
-        afficher("LifeBook", question, "bot");
-        afficher("Vous", reponse, "user");
-
-        if (!segments[chapId]) segments[chapId] = [];
-        segments[chapId].push(reponse);
-        sequenceCounts[chapId] = (sequenceCounts[chapId] || 0) + 1;
       }
 
       if (questionIndex < questions.length) {
-        afficherQuestion(questionIndex);  // Ne réaffiche que si réponse absente
+        const chapId = sequenceParQuestion[questionIndex] || 1;
+        if (chapId !== chapitreCourant && titreChapitres[chapId]) {
+          chapitreCourant = chapId;
+          afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+        }
+        afficherQuestion(questionIndex);
         miseAJourProgression();
       } else {
         afficher("LifeBook", "✅ Vous avez terminé toutes les questions ! Vous pouvez maintenant générer le livre.", "bot");
@@ -710,7 +710,6 @@ async function initChat() {
       }
 
     } else {
-      // Nouvelle interview
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
 
