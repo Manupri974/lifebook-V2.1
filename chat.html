@@ -214,13 +214,13 @@
     box-sizing: border-box;
   }
 .message.bot.chapitre {
-  background: #efe0ff;
-  border-left: 6px solid #7e3af2;
-  padding: 14px 18px;
-  border-radius: 12px;
-  margin: 20px 0;
+  background: #f6efff;
+  border-left: 4px solid #7e3af2;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 14px 0;
   font-weight: 600;
-  font-size: 1.1em;
+  font-size: 0.95em;
 }
   </style>
 </head>
@@ -647,7 +647,15 @@ async function initChat() {
       // 🧼 Affichage des questions/réponses existantes
       reponses.forEach((reponse, index) => {
         const question = questions[index] || `Question ${index + 1}`;
-        afficher("LifeBook", question, "bot");
+// Forcer l'affichage du premier chapitre
+const chapId = sequenceParQuestion[0] || 1;
+if (titreChapitres[chapId]) {
+  chapitreActuel = chapId;
+  afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+}
+
+// Afficher la première question
+afficher("LifeBook", questions[0], "bot");
         afficher("Vous", reponse, "user");
 
         const seqId = sequenceParQuestion[index] || 1;
