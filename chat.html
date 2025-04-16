@@ -563,18 +563,29 @@ async function chargerTemplateSequence({ type, qui, age, format }) {
   }
 }
 function afficher(auteur, texte, classe) {
+  if (!texte) {
+    console.warn("❌ Aucun texte à afficher pour :", auteur);
+    return;
+  }
+
   const msg = document.createElement("div");
   msg.className = "message " + classe;
-
-  if (classe === "bot") {
-    msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
-  } else {
-    msg.innerHTML = `<strong>${auteur} :</strong> ${texte}`;
-  }
+  msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
 
   const container = document.getElementById("messages");
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
+}
+    function afficherQuestion(index) {
+  const question = questions[index];
+  if (!question) {
+    console.warn("❌ Aucune question à afficher à l’index", index);
+    return;
+  }
+  afficher("LifeBook", question, "bot");
+  input.value = reponses[index] || "";
+  input.focus();
+  document.getElementById("progression").innerText = `Question ${index + 1} / ${questions.length}`;
 }
 async function initChat() {
   console.log("🚀 initChat lancé");
