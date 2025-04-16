@@ -633,14 +633,16 @@ function afficherQuestion(index) {
 
   const chapId = sequenceParQuestion[index] || 1;
 
-  // 🎯 Si on entre dans un nouveau chapitre : on l’affiche dans le chat
   if (chapId !== chapitreActuel && titreChapitres[chapId]) {
     chapitreActuel = chapId;
-    const titre = titreChapitres[chapId];
-afficher("Chapitre", `**${titre}**`, "bot chapitre");
+    afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
   }
 
-  afficher("LifeBook", question, "bot");
+  // ❌ Ne réaffiche pas si la réponse existe déjà
+  if (!reponses[index]) {
+    afficher("LifeBook", question, "bot");
+  }
+
   input.value = reponses[index] || "";
   input.focus();
   document.getElementById("progression").innerText = `Question ${index + 1} / ${questions.length}`;
@@ -652,7 +654,6 @@ async function initChat() {
     const params = new URLSearchParams(window.location.search);
     interviewId = params.get("id");
 
-    // 🔁 Chargement des paramètres
     templateParams = {
       type: params.get("type") || "bio",
       qui: params.get("qui") || "moi",
@@ -660,7 +661,6 @@ async function initChat() {
       format: params.get("format") || "court",
     };
 
-    // 🔁 Chargement du template
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
 
@@ -677,19 +677,19 @@ async function initChat() {
         return;
       }
 
-      // 🧠 Réponses récupérées
       reponses = data.content;
       questionIndex = reponses.length;
+
+      let dernierChapitre = null;
 
       for (let i = 0; i < reponses.length; i++) {
         const question = questions[i] || `Question ${i + 1}`;
         const reponse = reponses[i];
         const chapId = sequenceParQuestion[i] || 1;
 
-        // Afficher le chapitre si on entre dans un nouveau
-        if (chapId !== chapitreActuel && titreChapitres[chapId]) {
-          chapitreActuel = chapId;
+        if (chapId !== dernierChapitre && titreChapitres[chapId]) {
           afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+          dernierChapitre = chapId;
         }
 
         afficher("LifeBook", question, "bot");
@@ -701,13 +701,7 @@ async function initChat() {
       }
 
       if (questionIndex < questions.length) {
-        const nextChapId = sequenceParQuestion[questionIndex] || 1;
-        if (nextChapId !== chapitreActuel && titreChapitres[nextChapId]) {
-          chapitreActuel = nextChapId;
-          afficher("Chapitre", `**${titreChapitres[nextChapId]}**`, "bot chapitre");
-        }
-
-        afficherQuestion(questionIndex);
+        afficherQuestion(questionIndex);  // Ne réaffiche que si réponse absente
         miseAJourProgression();
       } else {
         afficher("LifeBook", "✅ Vous avez terminé toutes les questions ! Vous pouvez maintenant générer le livre.", "bot");
@@ -716,7 +710,7 @@ async function initChat() {
       }
 
     } else {
-      // 🆕 Nouvelle interview
+      // Nouvelle interview
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
 
@@ -735,7 +729,7 @@ async function initChat() {
     afficher("LifeBook", "⚠️ Une erreur s’est produite au lancement du chat.", "bot");
   }
 }
-
+    
 // ✅ Listeners bouton et clavier
 document.getElementById("sendBtn").addEventListener("click", sendMessage);
 document.getElementById("generateBtn").addEventListener("click", genererLivre);
