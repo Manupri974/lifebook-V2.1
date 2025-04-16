@@ -22,14 +22,25 @@ function construireProfilCondense(segments) {
 export default async function genererLivre(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Méthode non autorisée" });
 
-  const { segments, perso } = req.body;
+  // ✅ Ajout des nouveaux paramètres
+  const { segments, perso, titreChapitres = {}, questions = [] } = req.body;
   const pointDeVue = perso === "je" ? "à la première personne" : "à la troisième personne";
+
   if (!apiKey || !segments || typeof segments !== "object") {
     return res.status(400).json({ message: "Clé API ou segments manquant/invalide" });
   }
 
   console.log("🚀 Début de génération du livre...");
+
   const profilCondense = construireProfilCondense(segments);
+
+  // ✅ Construction du plan et des questions
+  const planComplet = Object.entries(titreChapitres)
+    .map(([num, titre]) => `Chapitre ${num} — ${titre}`)
+    .join("\n");
+
+  const toutesLesQuestions = questions.map((q, i) => `Q${i + 1}. ${q}`).join("\n");
+
   const promptSysteme = `Tu es une biographe professionnelle au style narratif fluide et constant. 
 Tu racontes des histoires de vie comme un roman vrai, avec chaleur, clarté, et émotion.`;
 
@@ -46,14 +57,24 @@ Contexte général (à garder en tête mais ne pas reformuler) :
 ${profilCondense}
 """
 
+Plan structuré de l’ouvrage :
+"""
+${planComplet}
+"""
+
+Liste des questions posées lors de l’interview :
+"""
+${toutesLesQuestions}
+"""
+
+⚠️ Ces questions sont fournies uniquement comme référence. 
+Tu ne dois **jamais** les reformuler, ni les inclure dans le texte.
+Ne les cite pas, n’en fais pas un plan, n’écris pas à leur place.
+
 Résumé narratif des chapitres précédents :
 """
 ${resumePourPrompt}
 """
-⚠️ Ce résumé est là uniquement pour t’aider à maintenir une continuité logique.
-Tu ne dois **jamais** le réutiliser ni le reformuler.
-
-Tu continues ici l’écriture du livre sans redite ni coupure. Évite les introductions inutiles.
 
 Séquence ${numero} à transformer en chapitre :
 """
@@ -68,7 +89,6 @@ Ta mission :
 `;
 
     console.log(`📤 Génération du chapitre ${numero}...`);
-    console.log("🧩 Résumé utilisé comme contexte :", resumePourPrompt);
 
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -95,7 +115,6 @@ Ta mission :
         chapitres.push(chapitreNettoye);
         console.log(`✅ Chapitre ${numero} généré`);
 
-        // Résumé glissant
         const resumeResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -122,7 +141,6 @@ Ta mission :
           resumeChapitres = [...resumeChapitres.split("\n"), extrait.trim()]
             .slice(-3)
             .join("\n");
-          console.log("🧠 Résumé mis à jour pour les prochains chapitres");
         }
       } else {
         console.warn(`⚠️ Aucun contenu généré pour la séquence ${numero}`);
@@ -131,9 +149,6 @@ Ta mission :
       console.error(`❌ Erreur GPT sur la séquence ${numero}`, err);
     }
   }
-
-  // 🪡 Couture finale par blocs de 3 chapitres
-  console.log("🪡 Démarrage de la couture finale (par blocs de 3 chapitres)...");
 
   const chapitresFinal = [];
 
@@ -178,10 +193,8 @@ Retourne le texte cousu, fluide et naturel, avec les titres conservés.
 
       if (texteCousu) {
         chapitresFinal.push(texteCousu.trim());
-        console.log(`🧵 Couture réussie : chapitres ${i + 1} à ${i + bloc.length}`);
       } else {
         chapitresFinal.push(...bloc);
-        console.warn(`⚠️ Couture échouée pour chapitres ${i + 1} à ${i + bloc.length}, texte brut conservé`);
       }
     } catch (err) {
       chapitresFinal.push(...bloc);
