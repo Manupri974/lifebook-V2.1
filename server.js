@@ -1,38 +1,50 @@
 import express from "express";
-console.log("👋 Démarrage server.js...");
+
+console.log("👋 Démarrage de server.js...");
 
 import genererLivre from "./api/generer-livre.js";
 import exporterPdf from "./api/exporter-pdf.js";
 
-const app = express();
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
+// ✅ Liste des domaines autorisés
 const allowedOrigins = [
   "https://lifebook-v2-1.vercel.app"
 ];
 
+const app = express();
+
+// ✅ Middlewares pour parser le corps des requêtes
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// ✅ Middleware CORS avec log de debug
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+  console.log("🌐 Requête entrante depuis :", origin);
+
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+    console.log("✅ Origin autorisée :", origin);
+  } else {
+    console.warn("⛔️ Origin refusée :", origin);
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
+    console.log("➡️ Préflight OPTIONS reçu, réponse 200");
     return res.sendStatus(200);
   }
 
   next();
 });
 
-// ✅ Routes actives
+// ✅ Routes principales
 app.post("/api/generer-livre", genererLivre);
 app.use("/api/exporter-pdf", exporterPdf);
 
+// ✅ Port dynamique
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("✅ Serveur lancé correctement sur le port", PORT);
+  console.log(`✅ Serveur démarré sur le port ${PORT}`);
 });
