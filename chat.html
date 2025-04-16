@@ -257,21 +257,6 @@ let segments = {};               // ✅ Pour stocker les messages par séquence
 let questionIndex = 0;          // ← nombre de questions déjà posées
 
     const status = document.getElementById("messageStatus");
-
-function afficher(auteur, texte, classe) {
-  const msg = document.createElement("div");
-  msg.className = "message " + classe;
-
-  // Si c'est une réponse bot, on interprète le Markdown
-  if (classe === "bot") {
-    msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
-  } else {
-    msg.innerHTML = `<strong>${auteur} :</strong> ${texte}`;
-  }
-
-  document.getElementById("messages").appendChild(msg);
-  document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-}
     function miseAJourProgression() {
       const count = historique.filter(m => m.role === "user").length;
       document.getElementById("progression").innerText = `Question ${count + 1} / 89`;
@@ -577,26 +562,20 @@ async function chargerTemplateSequence({ type, qui, age, format }) {
     sequenceParQuestion = [];
   }
 }
+function afficher(auteur, texte, classe) {
+  const msg = document.createElement("div");
+  msg.className = "message " + classe;
 
-    function afficher(auteur, texte, classe) {
-    const msg = document.createElement("div");
-    msg.className = "message " + classe;
+  if (classe === "bot") {
     msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(texte)}`;
-    const container = document.getElementById("messages");
-    container.innerHTML = "";
-    container.appendChild(msg);
-    container.scrollTop = container.scrollHeight;
+  } else {
+    msg.innerHTML = `<strong>${auteur} :</strong> ${texte}`;
   }
 
-  function afficherQuestion(index) {
-    const question = questions[index];
-    if (!question) return;
-    afficher("LifeBook", question, "bot");
-    input.value = reponses[index] || "";
-    input.focus();
-    document.getElementById("progression").innerText = `Question ${index + 1} / ${questions.length}`;
-  }
-
+  const container = document.getElementById("messages");
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+}
   function enregistrerReponse(index, texte) {
     if (!texte) return;
     reponses[index] = texte;
