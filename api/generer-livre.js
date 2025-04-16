@@ -32,7 +32,7 @@ export default async function genererLivre(req, res) {
   const toutesLesQuestions = questions.map((q, i) => `Q${i + 1}. ${q}`).join("\n");
 
   const chapitres = [];
-  let resumeChapitres = ""; // utilisé pour construire un résumé glissant des 3 derniers chapitres
+  let resumeChapitres = "";
 
   const sequenceKeys = Object.keys(segments).sort((a, b) => parseInt(a) - parseInt(b));
 
@@ -85,6 +85,13 @@ Ta mission :
 - Approffondie mais n’invente rien, et n’utilise pas d’énumération mécanique.
 `;
 
+    console.log(`🧾 CHAPITRE ${numero}`);
+    console.log("📘 Titre :", chapitreTitre);
+    console.log("🧠 Contexte :", profilCondense.slice(0, 200));
+    console.log("🧵 Résumé précédent :", resumePourPrompt.slice(0, 200));
+    console.log("❓ Questions :", questions.filter((q, idx) => sequenceParQuestion[idx] === numero));
+    console.log("📚 Séquence brute :", bloc.slice(0, 300));
+
     console.log(`📤 Génération du chapitre ${numero}...`);
 
     try {
@@ -112,7 +119,6 @@ Ta mission :
         chapitres.push(chapitreNettoye);
         console.log(`✅ Chapitre ${numero} généré`);
 
-        // 🎯 Résumé pour les prochaines séquences (glissant sur 3 max)
         const resumeRes = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -145,7 +151,6 @@ Ta mission :
     }
   }
 
-  // ✂️ Couture finale entre les chapitres (par blocs de 3)
   const chapitresFinal = [];
 
   for (let i = 0; i < chapitres.length; i += 3) {
@@ -162,6 +167,8 @@ ${bloc.join("\n\n")}
 """
 
 Retourne le texte cousu, fluide et naturel, avec les titres conservés.`;
+
+    console.log(`🧶 Couture des chapitres ${i + 1} à ${i + bloc.length}`);
 
     try {
       const coutureRes = await fetch("https://api.openai.com/v1/chat/completions", {
