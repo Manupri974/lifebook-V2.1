@@ -641,21 +641,18 @@ async function initChat() {
         return;
       }
 
-      // 🧠 Injection des réponses (dans reponses[])
       reponses = data.content;
 
-      // 🧼 Affichage des questions/réponses existantes
+      // Forcer l'affichage du premier chapitre (évite doublon)
+      const chapId = sequenceParQuestion[0] || 1;
+      if (titreChapitres[chapId]) {
+        chapitreActuel = chapId;
+afficher("LifeBook", `**${titreChapitres[chapId]}**`, "bot chapitre");
+      }
+
       reponses.forEach((reponse, index) => {
         const question = questions[index] || `Question ${index + 1}`;
-// Forcer l'affichage du premier chapitre
-const chapId = sequenceParQuestion[0] || 1;
-if (titreChapitres[chapId]) {
-  chapitreActuel = chapId;
-  afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
-}
-
-// Afficher la première question
-afficher("LifeBook", questions[0], "bot");
+        afficher("LifeBook", question, "bot");
         afficher("Vous", reponse, "user");
 
         const seqId = sequenceParQuestion[index] || 1;
@@ -670,6 +667,14 @@ afficher("LifeBook", questions[0], "bot");
       // 🆕 Nouvelle interview
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
+
+      // Afficher chapitre 1 avant la première question
+      const chapId = sequenceParQuestion[0] || 1;
+      if (titreChapitres[chapId]) {
+        chapitreActuel = chapId;
+        afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+      }
+
       afficher("LifeBook", questions[0], "bot");
     }
 
