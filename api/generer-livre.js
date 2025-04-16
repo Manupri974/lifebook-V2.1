@@ -7,23 +7,18 @@ const apiKey = process.env.OPENAI_API_KEY;
 function construireProfilCondense(segments) {
   const s1 = segments["1"];
   if (!s1 || s1.length < 3) return "";
+  const age = s1[0]?.trim() || "";
   const prenom = s1[1]?.trim() || "";
   const signification = s1[2]?.trim() || "";
   const naissance = s1[3]?.trim() || "";
-  const age = s1[0]?.trim() || "";
 
-  return `Profil de la personne interviewée :
-- Âge : ${age}
-- Prénom : ${prenom}
-- Signification ou origine du prénom : ${signification}
-- Lieu de naissance : ${naissance}`;
+  return `Profil de la personne interviewée :\n- Âge : ${age}\n- Prénom : ${prenom}\n- Signification ou origine du prénom : ${signification}\n- Lieu de naissance : ${naissance}`;
 }
 
 export default async function genererLivre(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Méthode non autorisée" });
 
-  // ✅ Ajout des nouveaux paramètres
-  const { segments, perso, titreChapitres = {}, questions = [] } = req.body;
+  const { segments, perso, titreChapitres = {}, questions = [], sequenceParQuestion = [] } = req.body;
   const pointDeVue = perso === "je" ? "à la première personne" : "à la troisième personne";
 
   if (!apiKey || !segments || typeof segments !== "object") {
@@ -34,47 +29,49 @@ export default async function genererLivre(req, res) {
 
   const profilCondense = construireProfilCondense(segments);
 
-  // ✅ Construction du plan et des questions
-  const planComplet = Object.entries(titreChapitres)
-    .map(([num, titre]) => `Chapitre ${num} — ${titre}`)
-    .join("\n");
-
   const toutesLesQuestions = questions.map((q, i) => `Q${i + 1}. ${q}`).join("\n");
 
-  const promptSysteme = `Tu es une biographe professionnelle au style narratif fluide et constant. 
-Tu racontes des histoires de vie comme un roman vrai, avec chaleur, clarté, et émotion.`;
-
-  let resumeChapitres = "";
   const chapitres = [];
+  let resumeChapitres = ""; // utilisé pour construire un résumé glissant des 3 derniers chapitres
 
-  for (const numero of Object.keys(segments).sort((a, b) => parseInt(a) - parseInt(b))) {
+  const sequenceKeys = Object.keys(segments).sort((a, b) => parseInt(a) - parseInt(b));
+
+  for (let i = 0; i < sequenceKeys.length; i++) {
+    const numero = sequenceKeys[i];
     const bloc = segments[numero].join("\n\n");
+    const chapitreTitre = `Chapitre ${numero} — ${titreChapitres[numero] || "Sans titre"}`;
+
     const resumePourPrompt = resumeChapitres || "Début du récit. Aucun chapitre encore généré.";
 
+    const promptSysteme = `Tu es une biographe professionnelle. Tu racontes une histoire de vie de façon fluide, littéraire, et sensible.`;
+
     const promptUtilisateur = `
-Contexte général (à garder en tête mais ne pas reformuler) :
+Contexte général (à garder en tête sans reformuler) :
 """
 ${profilCondense}
 """
 
-Plan structuré de l’ouvrage :
+Titre du chapitre :
 """
-${planComplet}
-"""
-
-Liste des questions posées lors de l’interview :
-"""
-${toutesLesQuestions}
+${chapitreTitre}
 """
 
-⚠️ Ces questions sont fournies uniquement comme référence. 
-Tu ne dois **jamais** les reformuler, ni les inclure dans le texte.
-Ne les cite pas, n’en fais pas un plan, n’écris pas à leur place.
-
-Résumé narratif des chapitres précédents :
+Résumé des chapitres précédents :
 """
 ${resumePourPrompt}
 """
+
+Liste des questions associées à cette séquence :
+"""
+${questions
+      .map((q, idx) => ({ index: idx + 1, chapitre: sequenceParQuestion[idx] }))
+      .filter(q => q.chapitre === numero)
+      .map(q => `Q${q.index}. ${questions[q.index - 1]}`)
+      .join("\n") || "Non disponible"
+} 
+"""
+
+⚠️ Tu ne dois **jamais** réécrire ces questions ni les reformuler dans le texte.
 
 Séquence ${numero} à transformer en chapitre :
 """
@@ -83,13 +80,11 @@ ${bloc}
 
 Ta mission :
 - Rédige un **chapitre fluide, vivant et littéraire** à partir de cette séquence.
-- Commence par un **titre stylisé** pour le chapitre ${numero}, par exemple : "Chapitre ${numero} — Une enfance libre".
+- Commence par le **titre** ci-dessus.
 - Rédige en français, ${pointDeVue}.
-- N’invente rien, et n’utilise pas d’énumération mécanique.
+- Approffondie mais n’invente rien, et n’utilise pas d’énumération mécanique.
 `;
-console.log("🧾 Prompt envoyé à GPT pour la séquence", numero);
-console.log(promptUtilisateur);
-    
+
     console.log(`📤 Génération du chapitre ${numero}...`);
 
     try {
@@ -117,7 +112,8 @@ console.log(promptUtilisateur);
         chapitres.push(chapitreNettoye);
         console.log(`✅ Chapitre ${numero} généré`);
 
-        const resumeResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        // 🎯 Résumé pour les prochaines séquences (glissant sur 3 max)
+        const resumeRes = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -125,24 +121,21 @@ console.log(promptUtilisateur);
           },
           body: JSON.stringify({
             model: "gpt-3.5-turbo",
-            temperature: 0.5,
+            temperature: 0.4,
             messages: [
               {
                 role: "system",
-                content:
-                  "Tu es un assistant qui résume un chapitre biographique en 2-3 phrases naturelles, pour aider le chapitre suivant à garder un fil logique.",
+                content: "Tu es un assistant qui résume un chapitre biographique en 2-3 phrases naturelles, pour aider le chapitre suivant à garder un fil logique."
               },
               { role: "user", content: chapitreNettoye }
             ]
           })
         });
 
-        const resumeData = await resumeResponse.json();
+        const resumeData = await resumeRes.json();
         const extrait = resumeData?.choices?.[0]?.message?.content;
         if (extrait) {
-          resumeChapitres = [...resumeChapitres.split("\n"), extrait.trim()]
-            .slice(-3)
-            .join("\n");
+          resumeChapitres = [...resumeChapitres.split("\n"), extrait.trim()].slice(-3).join("\n");
         }
       } else {
         console.warn(`⚠️ Aucun contenu généré pour la séquence ${numero}`);
@@ -152,14 +145,12 @@ console.log(promptUtilisateur);
     }
   }
 
+  // ✂️ Couture finale entre les chapitres (par blocs de 3)
   const chapitresFinal = [];
 
   for (let i = 0; i < chapitres.length; i += 3) {
     const bloc = chapitres.slice(i, i + 3);
-    if (bloc.length === 0) continue;
-
-    const couturePrompt = `
-Voici un extrait de livre divisé en 2 ou 3 chapitres consécutifs.
+    const couturePrompt = `Voici un extrait de livre divisé en 2 ou 3 chapitres consécutifs.
 Ta mission :
 - Améliore uniquement les **transitions entre chapitres**
 - Ne retire rien, ne reformule que les débuts/fins si besoin
@@ -170,8 +161,7 @@ Texte :
 ${bloc.join("\n\n")}
 """
 
-Retourne le texte cousu, fluide et naturel, avec les titres conservés.
-`;
+Retourne le texte cousu, fluide et naturel, avec les titres conservés.`;
 
     try {
       const coutureRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -199,8 +189,8 @@ Retourne le texte cousu, fluide et naturel, avec les titres conservés.
         chapitresFinal.push(...bloc);
       }
     } catch (err) {
-      chapitresFinal.push(...bloc);
       console.error(`❌ Erreur couture finale chapitres ${i + 1} à ${i + bloc.length}`, err);
+      chapitresFinal.push(...bloc);
     }
   }
 
