@@ -257,10 +257,11 @@ let segments = {};               // ✅ Pour stocker les messages par séquence
 let questionIndex = 0;          // ← nombre de questions déjà posées
 
     const status = document.getElementById("messageStatus");
-    function miseAJourProgression() {
-      const count = historique.filter(m => m.role === "user").length;
-      document.getElementById("progression").innerText = `Question ${count + 1} / 89`;
-    }
+function miseAJourProgression() {
+  const total = questions.length || 0;
+  const current = questionIndex + 1;
+  document.getElementById("progression").innerText = `Question ${current} / ${total}`;
+}
 async function genererPlan() {
   const btn = document.getElementById("planBtn");
   btn.disabled = true;
