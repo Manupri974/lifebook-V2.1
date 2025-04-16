@@ -383,11 +383,18 @@ async function genererLivre() {
 
     console.log("✅ Segments construits :", segments);
 
+    const payload = {
+      segments,
+      perso,
+      questions,
+      titreChapitres
+    };
+
     console.log("📤 Étape 2 : Envoi au backend...");
     const response = await fetch(`${API_BASE}/api/generer-livre`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ segments, perso }) // ✅ ici
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
@@ -406,6 +413,7 @@ async function genererLivre() {
       alert("⚠️ La réponse du serveur n’a pas pu être interprétée. Regarde la console.");
       return;
     }
+
     if (!data || !data.texte || data.texte.trim().length < 100) {
       alert("❌ Le texte généré est trop court. Vérifie les réponses.");
       return;
