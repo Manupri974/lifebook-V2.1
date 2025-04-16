@@ -599,8 +599,8 @@ function toggleRecording() {
     
 let sequenceParQuestion = [];
     
-async function chargerTemplateSequence({ type, qui, age, perso, format }) {
-  const nomFichier = `./templates/${type}-${qui}-${age}-${perso}-${format}.js`;
+async function chargerTemplateSequence({ type, qui, age, format }) {
+  const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`; // ❌ plus de perso
   try {
     const module = await import(nomFichier);
     sequenceParQuestion = module.sequenceParQuestion || [];
@@ -645,7 +645,12 @@ async function initChat() {
           perso: currentParams.get("perso") || "il",
           format: currentParams.get("format") || "court",
         };
-        await chargerTemplateSequence(templateParams);
+await chargerTemplateSequence({
+  type: templateParams.type,
+  qui: templateParams.qui,
+  age: templateParams.age,
+  format: templateParams.format
+});
       }
 
       if (error || !data?.content || !Array.isArray(data.content)) {
@@ -705,7 +710,12 @@ async function initChat() {
         format: initialParams.get("format") || "court",
       };
 
-      await chargerTemplateSequence(templateParams);
+await chargerTemplateSequence({
+  type: templateParams.type,
+  qui: templateParams.qui,
+  age: templateParams.age,
+  format: templateParams.format
+});
       console.log("🧠 Template initial chargé :", templateParams);
 
       const response = await fetch(`https://lifebook-docker.onrender.com/api/chat?type=${templateParams.type}&qui=${templateParams.qui}&age=${templateParams.age}&perso=${templateParams.perso}&format=${templateParams.format}`, {
