@@ -576,38 +576,6 @@ function afficher(auteur, texte, classe) {
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
 }
-  function enregistrerReponse(index, texte) {
-    if (!texte) return;
-    reponses[index] = texte;
-    const seqId = sequenceParQuestion[index] || 1;
-    if (!segments[seqId]) segments[seqId] = [];
-    segments[seqId][sequenceCounts[seqId] || 0] = texte;
-    sequenceCounts[seqId] = (sequenceCounts[seqId] || 0) + 1;
-  }
-
-  document.getElementById("nextBtn").addEventListener("click", () => {
-    enregistrerReponse(questionIndex, input.value.trim());
-    if (questionIndex < questions.length - 1) {
-      questionIndex++;
-      afficherQuestion(questionIndex);
-    }
-  });
-
-  document.getElementById("prevBtn").addEventListener("click", () => {
-    enregistrerReponse(questionIndex, input.value.trim());
-    if (questionIndex > 0) {
-      questionIndex--;
-      afficherQuestion(questionIndex);
-    }
-  });
-
-  document.getElementById("sendBtn").addEventListener("click", () => {
-    enregistrerReponse(questionIndex, input.value.trim());
-    if (questionIndex < questions.length - 1) {
-      questionIndex++;
-      afficherQuestion(questionIndex);
-    }
-  });
 async function initChat() {
   console.log("🚀 initChat lancé");
 
