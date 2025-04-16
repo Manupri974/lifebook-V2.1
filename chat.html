@@ -213,6 +213,15 @@
     min-height: 44px;
     box-sizing: border-box;
   }
+    .message.bot strong {
+  display: block;
+  padding: 12px 16px;
+  background: #efe0ff;
+  border-left: 6px solid #7e3af2;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 1.1em;
+}
   </style>
 </head>
 
@@ -575,12 +584,24 @@ function afficher(auteur, texte, classe) {
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
 }
-    function afficherQuestion(index) {
+  let chapitreActuel = null; // 🔄 à placer une seule fois en global si pas encore fait
+
+function afficherQuestion(index) {
   const question = questions[index];
   if (!question) {
     console.warn("❌ Aucune question à afficher à l’index", index);
     return;
   }
+
+  const chapId = sequenceParQuestion[index] || 1;
+
+  // 🎯 Si on entre dans un nouveau chapitre : on l’affiche dans le chat
+  if (chapId !== chapitreActuel && titreChapitres[chapId]) {
+    chapitreActuel = chapId;
+    const titre = titreChapitres[chapId];
+    afficher("Chapitre", `**${titre}**`, "bot");
+  }
+
   afficher("LifeBook", question, "bot");
   input.value = reponses[index] || "";
   input.focus();
