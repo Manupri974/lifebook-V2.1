@@ -87,7 +87,9 @@ Ta mission :
 - Rédige en français, ${pointDeVue}.
 - N’invente rien, et n’utilise pas d’énumération mécanique.
 `;
-
+console.log("🧾 Prompt envoyé à GPT pour la séquence", numero);
+console.log(promptUtilisateur);
+    
     console.log(`📤 Génération du chapitre ${numero}...`);
 
     try {
