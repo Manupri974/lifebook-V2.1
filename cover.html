@@ -74,9 +74,6 @@
       height: 100%;
       object-fit: cover;
     }
-    #upload {
-      margin-top: 10px;
-    }
     #lifebook-logo {
       position: absolute;
       bottom: 5%;
@@ -91,11 +88,22 @@
       margin-top: 20px;
       text-align: center;
     }
-    button {
+    input[type="file"] {
+      display: none;
+    }
+    .button {
       padding: 10px 20px;
       font-size: 16px;
       margin: 5px;
       cursor: pointer;
+      background-color: #a678d0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #8e57c4;
     }
   </style>
 </head>
@@ -113,8 +121,8 @@
 
 <div id="actions">
   <input type="file" id="upload" accept="image/*">
-  <button onclick="triggerUpload()">Uploader une photo</button>
-  <button onclick="generateCover()">Finaliser et Télécharger</button>
+  <button class="button" onclick="triggerUpload()">Uploader une photo</button>
+  <button class="button" onclick="generateCover()">Finaliser et Télécharger</button>
 </div>
 
 <script>
