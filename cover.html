@@ -3,139 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer la couverture - LifeBook</title>
+  <title>Créer une couverture</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #9b59b6;
+      background: linear-gradient(to right, #f3e8ff, #fff0f5);
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
       padding: 20px;
     }
 
-    .cover-container {
-      position: relative;
-      width: 350px;
-      height: 500px;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
+    .cover {
+      background: #f3e8ff; /* Violet clair aligné avec ton dégradé */
+      width: 320px;
+      height: 450px;
+      border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .cover-img {
-      width: 100%;
-      height: auto;
-      margin-top: 10px;
-    }
-
-    .input-field {
-      width: 80%;
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
       text-align: center;
+      position: relative;
     }
 
-    .upload-photo {
-      width: 80%;
-      height: 150px;
-      background: #eee;
-      margin: 10px 0;
-      border: 2px dashed #bbb;
-      border-radius: 8px;
+    .cover h1 {
+      font-size: 1.4em;
+      margin-bottom: 10px;
+      color: #6b1e8a;
+    }
+
+    .cover h2 {
+      font-size: 1em;
+      margin-bottom: 20px;
+      color: #8a4ba3;
+      font-weight: 400;
+    }
+
+    .image-placeholder {
+      background: #d9b3e4;
+      width: 100%;
+      height: 180px;
+      margin: 20px 0;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #666;
-      cursor: pointer;
-    }
-
-    #generateBtn {
-      margin-top: 20px;
-      padding: 12px 24px;
-      background: #7c3aed;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    #generateBtn:hover {
-      background: #6d28d9;
+    .cover p {
+      margin: 20px 0 10px;
+      font-weight: 600;
+      color: #333;
     }
 
-    #logo {
-      margin-top: auto;
-      width: 100px;
-      opacity: 0.8;
+    .logo {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1em;
+      color: #6b1e8a;
     }
   </style>
 </head>
 <body>
-  <div class="cover-container">
-    <input type="text" id="titleInput" class="input-field" placeholder="Ajouter un titre" />
-    <input type="text" id="subtitleInput" class="input-field" placeholder="Ajouter un sous-titre" />
 
-    <label class="upload-photo" for="photoInput">
-      + Ajouter une photo
-    </label>
-    <input type="file" id="photoInput" style="display:none" accept="image/*" />
+  <div class="cover">
+    <h1>Ajouter un titre</h1>
+    <h2>Ajouter un sous-titre</h2>
 
-    <input type="text" id="authorInput" class="input-field" placeholder="Ajouter nom(s)" />
+    <div class="image-placeholder" id="uploadArea">
+      Ajouter une photo
+    </div>
 
-    <button id="generateBtn">Générer Livre</button>
+    <p>Ajouter nom(s)</p>
 
-    <img id="logo" src="LIEN_DU_LOGO_ICI" alt="LifeBook Logo">
+    <div class="logo">
+      📖 LifeBook
+      <!-- On ajoutera ici ton vrai logo image plus tard -->
+    </div>
   </div>
 
-<script>
-  const uploadPhoto = document.querySelector('.upload-photo');
-  const photoInput = document.getElementById('photoInput');
-
-  uploadPhoto.addEventListener('click', () => {
-    photoInput.click();
-  });
-
-  photoInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        uploadPhoto.style.backgroundImage = `url(${e.target.result})`;
-        uploadPhoto.style.backgroundSize = 'cover';
-        uploadPhoto.style.backgroundPosition = 'center';
-        uploadPhoto.innerHTML = '';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  document.getElementById('generateBtn').addEventListener('click', () => {
-    const titre = document.getElementById('titleInput').value;
-    const sousTitre = document.getElementById('subtitleInput').value;
-    const auteur = document.getElementById('authorInput').value;
-
-    console.log('Titre:', titre);
-    console.log('Sous-titre:', sousTitre);
-    console.log('Auteur:', auteur);
-    // TODO: Envoyer ces données + photo au serveur ou à l'étape suivante
-  });
-</script>
+  <script>
+    document.getElementById('uploadArea').addEventListener('click', () => {
+      alert('Fonction upload à venir ici.');
+    });
+  </script>
 
 </body>
 </html>
