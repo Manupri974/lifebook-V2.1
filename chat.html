@@ -447,6 +447,10 @@ async function sauvegarder() {
   status.style.color = "black";
 
   const { data: { session }, error } = await supabase.auth.getSession();
+  
+  console.log('👤 Session récupérée :', session); // <<< AJOUTÉ
+  console.log('🔑 user_id pour insert :', session?.user?.id); // <<< AJOUTÉ
+  
   if (!session || error) {
     status.textContent = "❌ Non connecté.";
     status.style.color = "red";
@@ -455,7 +459,6 @@ async function sauvegarder() {
 
   const user = session.user;
   let result;
-
   if (interviewId) {
     result = await supabase
       .from("responses")
