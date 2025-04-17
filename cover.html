@@ -163,7 +163,7 @@ uploadInput.addEventListener('change', (e) => {
       cropBoxResizable: true,
       dragMode: 'move'
     });
-  };
+  }
   reader.readAsDataURL(file);
 });
 
@@ -174,9 +174,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 async function finalizeCover() {
-  const finalizeBtn = document.getElementById('finalizeBtn');
-  finalizeBtn.disabled = true;
-  finalizeBtn.textContent = "⏳ Sauvegarde en cours...";
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    alert('❌ Vous devez être connecté pour sauvegarder.');
+    return;
+  }
 
   const canvas = document.createElement('canvas');
   canvas.width = 1748;
@@ -198,13 +200,13 @@ async function finalizeCover() {
     ctx.font = 'bold 100px Georgia';
     ctx.fillStyle = '#333';
     ctx.textAlign = 'center';
-    ctx.fillText(document.getElementById('title').innerText, canvas.width / 2, 250);
+    ctx.fillText(document.getElementById('title').innerText, canvas.width/2, 250);
 
     ctx.font = 'italic 70px Georgia';
-    ctx.fillText(document.getElementById('subtitle').innerText, canvas.width / 2, 400);
+    ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 400);
 
     ctx.font = 'italic 80px Georgia';
-    ctx.fillText(document.getElementById('author').innerText, canvas.width / 2, 2200);
+    ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2200);
 
     ctx.font = 'bold 40px Arial';
     ctx.fillStyle = 'white';
@@ -214,28 +216,29 @@ async function finalizeCover() {
 
     const { error } = await supabase
       .from('covers')
-      .upsert([{ id: interviewId, cover_base64: coverBase64 }]);
+      .upsert([{
+        id: interviewId,
+        user_id: session.user.id,
+        cover_base64: coverBase64
+      }]);
 
     if (error) {
-      finalizeBtn.textContent = "❌ Erreur sauvegarde";
-      finalizeBtn.disabled = false;
+      alert('❌ Erreur en sauvegardant la couverture');
       console.error(error);
     } else {
-      finalizeBtn.textContent = "✅ Sauvegarde réussie";
-      setTimeout(() => {
-        window.location.href = `chat.html?id=${interviewId}`;
-      }, 1200);
+      alert('✅ Couverture sauvegardée ! Retour au livre...');
+      window.location.href = `chat.html?id=${interviewId}`;
     }
   };
 
   background.onerror = () => {
-    finalizeBtn.textContent = "❌ Erreur chargement fond";
-    finalizeBtn.disabled = false;
+    alert('❌ Impossible de charger l’image de fond !');
   };
 }
 
 document.getElementById('uploadBtn').addEventListener('click', triggerUpload);
 document.getElementById('finalizeBtn').addEventListener('click', finalizeCover);
+
 </script>
 
 </body>
