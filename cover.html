@@ -6,6 +6,7 @@
   <title>Créer une couverture LifeBook</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
   <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       margin: 0;
@@ -14,7 +15,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       overflow: auto;
     }
     .editor-container {
@@ -85,7 +86,7 @@
       border-radius: 5px;
     }
     #actions {
-      margin-top: 20px;
+      margin: 20px 0;
       text-align: center;
     }
     input[type="file"] {
@@ -122,97 +123,115 @@
 <div id="actions">
   <input type="file" id="upload" accept="image/*">
   <button class="button" onclick="triggerUpload()">Uploader une photo</button>
-  <button class="button" onclick="generateCover()">Finaliser et Télécharger</button>
+  <button class="button" onclick="finalizeCover()">Enregistrer la couverture et générer mon livre</button>
 </div>
 
-<script>
-  const photoArea = document.getElementById('photo-area');
-  const uploadInput = document.getElementById('upload');
-  let cropper;
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  function triggerUpload() {
-    uploadInput.click();
+const supabase = createClient(
+  'https://qgmxclxahaqnvvxhgcms.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
+);
+
+const params = new URLSearchParams(window.location.search);
+const interviewId = params.get('id');
+const photoArea = document.getElementById('photo-area');
+const uploadInput = document.getElementById('upload');
+let cropper;
+
+function triggerUpload() {
+  uploadInput.click();
+}
+
+uploadInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    photoArea.innerHTML = `<img id="uploaded-image" src="${event.target.result}">`;
+    const image = document.getElementById('uploaded-image');
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(image, {
+      aspectRatio: 3 / 2,
+      viewMode: 1,
+      autoCropArea: 1,
+      background: false,
+      responsive: true,
+      guides: false,
+      movable: true,
+      zoomable: true,
+      scalable: false,
+      cropBoxResizable: true,
+      dragMode: 'move'
+    });
   }
 
-  uploadInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
+  reader.readAsDataURL(file);
+});
 
-    reader.onload = function (event) {
-      photoArea.innerHTML = `<img id="uploaded-image" src="${event.target.result}">`;
-      const image = document.getElementById('uploaded-image');
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(image, {
-        aspectRatio: 3 / 2,
-        viewMode: 1,
-        autoCropArea: 1,
-        background: false,
-        responsive: true,
-        guides: false,
-        movable: true,
-        zoomable: true,
-        scalable: false,
-        cropBoxResizable: true,
-        dragMode: 'move'
-      });
-    }
+function finalizeCrop() {
+  const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960, fillColor: null });
+  const imgUrl = canvas.toDataURL('image/png');
+  cropper.destroy();
+  cropper = null;
+  photoArea.innerHTML = `<img src="${imgUrl}">`;
+}
 
-    reader.readAsDataURL(file);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && cropper) {
-      finalizeCrop();
-    }
-  });
-
-  function finalizeCrop() {
-    const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960, fillColor: null });
-    const imgUrl = canvas.toDataURL('image/png');
-    cropper.destroy();
-    cropper = null;
-    photoArea.innerHTML = `<img src="${imgUrl}">`;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && cropper) {
+    finalizeCrop();
   }
+});
 
-  function generateCover() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1748;
-    canvas.height = 2480;
-    const ctx = canvas.getContext('2d');
+async function finalizeCover() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1748;
+  canvas.height = 2480;
+  const ctx = canvas.getContext('2d');
 
-    const background = new Image();
-    background.src = 'Sans titre (148 x 210 mm) (1).png';
+  const background = new Image();
+  background.src = 'Sans titre (148 x 210 mm) (1).png';
 
-    background.onload = () => {
-      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  background.onload = async () => {
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-      const photo = photoArea.querySelector('img');
-      if (photo) {
-        ctx.drawImage(photo, 174, 744, 1400, 992);
-      }
+    const photo = photoArea.querySelector('img');
+    if (photo) {
+      ctx.drawImage(photo, 174, 744, 1400, 992);
+    }
 
-      ctx.font = 'bold 100px Georgia';
-      ctx.fillStyle = '#333';
-      ctx.textAlign = 'center';
-      ctx.fillText(document.getElementById('title').innerText, canvas.width/2, 250);
+    ctx.font = 'bold 100px Georgia';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'center';
+    ctx.fillText(document.getElementById('title').innerText, canvas.width/2, 250);
 
-      ctx.font = 'italic 70px Georgia';
-      ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 400);
+    ctx.font = 'italic 70px Georgia';
+    ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 400);
 
-      ctx.font = 'italic 80px Georgia';
-      ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2200);
+    ctx.font = 'italic 80px Georgia';
+    ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2200);
 
-      ctx.font = 'bold 40px Arial';
-      ctx.fillStyle = 'white';
-      ctx.fillText('LifeBook', canvas.width - 150, canvas.height - 50);
+    ctx.font = 'bold 40px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('LifeBook', canvas.width - 150, canvas.height - 50);
 
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
-      link.download = 'lifebook-couverture.png';
-      link.click();
+    const coverBase64 = canvas.toDataURL('image/png');
+
+    const { data, error } = await supabase
+      .from('covers')
+      .upsert([{ id: interviewId, cover_base64: coverBase64 }]);
+
+    if (error) {
+      alert('❌ Erreur en sauvegardant la couverture');
+      console.error(error);
+    } else {
+      alert('✅ Couverture sauvegardée ! Retour au livre...');
+      window.location.href = `chat.html?id=${interviewId}`;
     }
   }
+}
 </script>
 
 </body>
