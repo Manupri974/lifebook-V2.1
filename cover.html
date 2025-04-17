@@ -21,14 +21,17 @@
 
     .cover-container {
       position: relative;
-      width: 340px;
-      height: 550px;
+      width: 360px;
+      height: 600px;
       background: #f6f2fb;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       padding: 20px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .editable {
@@ -49,27 +52,28 @@
     }
 
     .photo-placeholder {
-      width: 260px;
-      height: 260px;
+      width: 280px;
+      height: 380px;
       background: #e0cfea;
       border: 2px dashed #4b145c;
       border-radius: 12px;
-      margin: 20px auto;
+      margin: 15px 0 10px;
       overflow: hidden;
       position: relative;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .photo-placeholder img {
-      max-width: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       display: block;
     }
 
-    button {
-      margin-top: 20px;
+    button, label[for="photoInput"] {
+      margin-top: 10px;
       background: #a347ba;
       color: white;
       padding: 10px 20px;
@@ -78,9 +82,10 @@
       cursor: pointer;
       font-weight: bold;
       transition: background 0.3s;
+      display: inline-block;
     }
 
-    button:hover {
+    button:hover, label[for="photoInput"]:hover {
       background: #912ca3;
     }
 
@@ -96,8 +101,10 @@
 
     <div class="photo-placeholder" id="photoPlaceholder">
       <span>Votre photo ici</span>
-      <input type="file" id="photoInput" accept="image/*" />
     </div>
+
+    <label for="photoInput">Choisir une photo</label>
+    <input type="file" id="photoInput" accept="image/*" />
 
     <button id="generateButton">Générer Livre</button>
   </div>
@@ -108,10 +115,6 @@
     const input = document.getElementById('photoInput');
     let cropper;
 
-    placeholder.addEventListener('click', () => {
-      input.click();
-    });
-
     input.addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -119,12 +122,19 @@
         reader.onload = (e) => {
           placeholder.innerHTML = `<img id="image" src="${e.target.result}" alt="Photo">`;
           const image = document.getElementById('image');
+          if (cropper) {
+            cropper.destroy();
+          }
           cropper = new Cropper(image, {
-            aspectRatio: 1,
+            aspectRatio: 7 / 10,
             viewMode: 1,
             dragMode: 'move',
-            responsive: true,
             background: false,
+            guides: false,
+            center: true,
+            highlight: false,
+            cropBoxMovable: false,
+            cropBoxResizable: false,
             zoomOnWheel: true,
           });
         };
