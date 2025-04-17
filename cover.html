@@ -3,104 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer la couverture du LifeBook</title>
+  <title>Créer la couverture - LifeBook</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #f3e8ff, #fff0f5);
       margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #9b59b6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
-      text-align: center;
-      color: #333;
     }
 
-    #cover-container {
+    .cover-container {
       position: relative;
-      width: 300px;
-      height: 420px;
-      margin: 40px auto;
-      background: url('/path/to/ton-image.png') no-repeat center center;
-      background-size: cover;
+      width: 350px;
+      height: 500px;
+      background: white;
       border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
     }
 
-    .text-overlay {
-      position: absolute;
+    .cover-img {
       width: 100%;
-      text-align: center;
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+      height: auto;
+      margin-top: 10px;
     }
 
-    #titrePreview { top: 30px; font-size: 1.5em; font-weight: 700; }
-    #sousTitrePreview { top: 70px; font-size: 1em; }
-    #auteurPreview { bottom: 40px; font-size: 1.2em; font-weight: 600; position: absolute; width: 100%; }
-
-    input {
-      margin: 10px auto;
-      padding: 10px;
+    .input-field {
       width: 80%;
-      border-radius: 8px;
+      margin: 10px 0;
+      padding: 10px;
       border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 1em;
+      text-align: center;
     }
 
-    button {
+    .upload-photo {
+      width: 80%;
+      height: 150px;
+      background: #eee;
+      margin: 10px 0;
+      border: 2px dashed #bbb;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      cursor: pointer;
+    }
+
+    #generateBtn {
       margin-top: 20px;
       padding: 12px 24px;
-      font-size: 1em;
+      background: #7c3aed;
+      color: white;
       border: none;
       border-radius: 8px;
-      background-color: #a347ba;
-      color: white;
+      font-size: 1em;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.2s;
     }
 
-    button:hover {
-      background-color: #912ca3;
+    #generateBtn:hover {
+      background: #6d28d9;
+    }
+
+    #logo {
+      margin-top: auto;
+      width: 100px;
+      opacity: 0.8;
     }
   </style>
 </head>
-
 <body>
-  <h1>Configurer la couverture</h1>
+  <div class="cover-container">
+    <input type="text" id="titleInput" class="input-field" placeholder="Ajouter un titre" />
+    <input type="text" id="subtitleInput" class="input-field" placeholder="Ajouter un sous-titre" />
 
-  <input id="titreLivre" placeholder="Ajouter un titre">
-  <input id="sousTitreLivre" placeholder="Ajouter un sous-titre">
-  <input id="auteurLivre" placeholder="Ajouter un nom d'auteur">
+    <label class="upload-photo" for="photoInput">
+      + Ajouter une photo
+    </label>
+    <input type="file" id="photoInput" style="display:none" accept="image/*" />
 
-  <div id="cover-container">
-    <div id="titrePreview" class="text-overlay"></div>
-    <div id="sousTitrePreview" class="text-overlay"></div>
-    <div id="auteurPreview" class="text-overlay"></div>
+    <input type="text" id="authorInput" class="input-field" placeholder="Ajouter nom(s)" />
+
+    <button id="generateBtn">Générer Livre</button>
+
+    <img id="logo" src="LIEN_DU_LOGO_ICI" alt="LifeBook Logo">
   </div>
 
-  <button id="generateLivreBtn">Générer Livre</button>
+<script>
+  const uploadPhoto = document.querySelector('.upload-photo');
+  const photoInput = document.getElementById('photoInput');
 
-  <script>
-    const titreInput = document.getElementById("titreLivre");
-    const sousTitreInput = document.getElementById("sousTitreLivre");
-    const auteurInput = document.getElementById("auteurLivre");
+  uploadPhoto.addEventListener('click', () => {
+    photoInput.click();
+  });
 
-    titreInput.addEventListener("input", () => document.getElementById("titrePreview").innerText = titreInput.value);
-    sousTitreInput.addEventListener("input", () => document.getElementById("sousTitrePreview").innerText = sousTitreInput.value);
-    auteurInput.addEventListener("input", () => document.getElementById("auteurPreview").innerText = auteurInput.value);
+  photoInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadPhoto.style.backgroundImage = `url(${e.target.result})`;
+        uploadPhoto.style.backgroundSize = 'cover';
+        uploadPhoto.style.backgroundPosition = 'center';
+        uploadPhoto.innerHTML = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
-    document.getElementById("generateLivreBtn").addEventListener("click", async () => {
-      const titre = titreInput.value.trim();
-      const sousTitre = sousTitreInput.value.trim();
-      const auteur = auteurInput.value.trim();
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const titre = document.getElementById('titleInput').value;
+    const sousTitre = document.getElementById('subtitleInput').value;
+    const auteur = document.getElementById('authorInput').value;
 
-      const payload = { titre, sousTitre, auteur };
+    console.log('Titre:', titre);
+    console.log('Sous-titre:', sousTitre);
+    console.log('Auteur:', auteur);
+    // TODO: Envoyer ces données + photo au serveur ou à l'étape suivante
+  });
+</script>
 
-      console.log("📦 Payload ", payload);
-
-      // Ici on branchera l'appel API plus tard
-      // const response = await fetch('/api/generer-livre-complet', {...})
-    });
-  </script>
 </body>
 </html>
