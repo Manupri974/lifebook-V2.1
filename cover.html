@@ -1,150 +1,112 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer la couverture - LifeBook</title>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #d5b4e6, #f8d5e7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Merriweather', serif;
-      color: #4b145c;
-    }
-
-    .cover-container {
-      position: relative;
-      width: 360px;
-      height: 600px;
-      background: #f6f2fb;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      padding: 20px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .editable {
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid transparent;
-      font-family: 'Merriweather', serif;
-      font-size: 1em;
-      color: #4b145c;
-      text-align: center;
-      width: 100%;
-      margin: 5px 0;
-    }
-
-    .editable:focus {
-      outline: none;
-      border-bottom: 1px solid #4b145c;
-    }
-
-    .photo-placeholder {
-      width: 280px;
-      height: 380px;
-      background: #e0cfea;
-      border: 2px dashed #4b145c;
-      border-radius: 12px;
-      margin: 15px 0 10px;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .photo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    button, label[for="photoInput"] {
-      margin-top: 10px;
-      background: #a347ba;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-      display: inline-block;
-    }
-
-    button:hover, label[for="photoInput"]:hover {
-      background: #912ca3;
-    }
-
-    #photoInput {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une couverture A5</title>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2eafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .cover-container {
+            position: relative;
+            width: 420px;
+            height: 595px;
+            background-image: url('Sans titre (148 x 210 mm) (1).png');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .editable {
+            cursor: pointer;
+            background: rgba(255,255,255,0.6);
+            padding: 5px;
+            border-radius: 4px;
+        }
+        #image-placeholder {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            position: relative;
+            overflow: hidden;
+        }
+        #image-placeholder img {
+            width: 100%;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div class="cover-container">
-    <input type="text" id="titleInput" class="editable" value="Titre de votre livre" />
-    <input type="text" id="subtitleInput" class="editable" value="Sous-titre éventuel" />
+    <div class="cover-container">
+        <h1 class="editable" contenteditable="true">Ajouter un titre</h1>
+        <h3 class="editable" contenteditable="true">Ajouter un sous-titre</h3>
 
-    <div class="photo-placeholder" id="photoPlaceholder">
-      <span>Votre photo ici</span>
+        <div id="image-placeholder">Cliquez pour ajouter une photo</div>
+        <input type="file" id="file-input" accept="image/*">
+
+        <h3 class="editable" contenteditable="true">Ajouter nom(s)</h3>
+        <button id="save-button">Enregistrer la couverture</button>
     </div>
 
-    <label for="photoInput">Choisir une photo</label>
-    <input type="file" id="photoInput" accept="image/*" />
+    <script>
+        const placeholder = document.getElementById('image-placeholder');
+        const fileInput = document.getElementById('file-input');
+        let cropper;
 
-    <button id="generateButton">Générer Livre</button>
-  </div>
+        placeholder.addEventListener('click', () => fileInput.click());
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script>
-    const placeholder = document.getElementById('photoPlaceholder');
-    const input = document.getElementById('photoInput');
-    let cropper;
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
 
-    input.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          placeholder.innerHTML = `<img id="image" src="${e.target.result}" alt="Photo">`;
-          const image = document.getElementById('image');
-          if (cropper) {
-            cropper.destroy();
-          }
-          cropper = new Cropper(image, {
-            aspectRatio: 7 / 10,
-            viewMode: 1,
-            dragMode: 'move',
-            background: false,
-            guides: false,
-            center: true,
-            highlight: false,
-            cropBoxMovable: false,
-            cropBoxResizable: false,
-            zoomOnWheel: true,
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+            reader.onload = function (event) {
+                placeholder.innerHTML = '<img id="uploaded-image" src="' + event.target.result + '">';
 
-    document.getElementById("generateButton").addEventListener("click", () => {
-      alert("🚀 Génération du livre déclenchée (simulation) !");
-    });
-  </script>
+                const image = document.getElementById('uploaded-image');
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(image, {
+                    aspectRatio: 3 / 2,
+                    viewMode: 1,
+                });
+            }
+
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('save-button').addEventListener('click', () => {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({ width: 400, height: 300 });
+                placeholder.innerHTML = '<img src="' + canvas.toDataURL() + '">';
+                cropper.destroy();
+                cropper = null;
+            }
+
+            alert('Votre couverture est prête à être sauvegardée ou exportée.');
+        });
+    </script>
 </body>
 </html>
