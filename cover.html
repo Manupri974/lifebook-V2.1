@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Créer la couverture - LifeBook</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
   <style>
     body {
       margin: 0;
@@ -20,20 +21,14 @@
 
     .cover-container {
       position: relative;
-      width: 320px;
-      height: 500px;
+      width: 340px;
+      height: 550px;
       background: #f6f2fb;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       padding: 20px;
       text-align: center;
-    }
-
-    .cover-container h1, .cover-container h2 {
-      margin: 10px 0;
-      font-weight: 700;
-      cursor: pointer;
     }
 
     .editable {
@@ -54,27 +49,23 @@
     }
 
     .photo-placeholder {
-      width: 220px;
-      height: 220px;
+      width: 260px;
+      height: 260px;
       background: #e0cfea;
       border: 2px dashed #4b145c;
       border-radius: 12px;
       margin: 20px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9em;
-      color: #7c3c97;
       overflow: hidden;
       position: relative;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .photo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
+      max-width: 100%;
+      display: block;
     }
 
     button {
@@ -104,16 +95,18 @@
     <input type="text" id="subtitleInput" class="editable" value="Sous-titre éventuel" />
 
     <div class="photo-placeholder" id="photoPlaceholder">
-      Votre photo ici
+      <span>Votre photo ici</span>
       <input type="file" id="photoInput" accept="image/*" />
     </div>
 
     <button id="generateButton">Générer Livre</button>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
     const placeholder = document.getElementById('photoPlaceholder');
     const input = document.getElementById('photoInput');
+    let cropper;
 
     placeholder.addEventListener('click', () => {
       input.click();
@@ -124,7 +117,16 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          placeholder.innerHTML = `<img src="${e.target.result}" alt="Photo">`;
+          placeholder.innerHTML = `<img id="image" src="${e.target.result}" alt="Photo">`;
+          const image = document.getElementById('image');
+          cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            responsive: true,
+            background: false,
+            zoomOnWheel: true,
+          });
         };
         reader.readAsDataURL(file);
       }
