@@ -219,6 +219,9 @@ async function finalizeCover() {
 
     const coverBase64 = canvas.toDataURL('image/png');
 
+window.triggerUpload = triggerUpload;
+window.finalizeCover = finalizeCover;
+
     const { data, error } = await supabase
       .from('covers')
       .upsert([{ id: interviewId, cover_base64: coverBase64 }]);
