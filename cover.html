@@ -6,7 +6,6 @@
   <title>Créer une couverture LifeBook</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
   <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       margin: 0;
@@ -42,21 +41,9 @@
       cursor: text;
       font-family: 'Georgia', serif;
     }
-    #title {
-      top: 8%;
-      font-size: 28px;
-      font-weight: bold;
-    }
-    #subtitle {
-      top: 16%;
-      font-size: 22px;
-      font-style: italic;
-    }
-    #author {
-      bottom: 12%;
-      font-size: 24px;
-      font-style: italic;
-    }
+    #title { top: 8%; font-size: 28px; font-weight: bold; }
+    #subtitle { top: 16%; font-size: 22px; font-style: italic; }
+    #author { bottom: 12%; font-size: 24px; font-style: italic; }
     #photo-area {
       position: absolute;
       top: 30%;
@@ -122,8 +109,8 @@
 
 <div id="actions">
   <input type="file" id="upload" accept="image/*">
-  <button class="button" onclick="triggerUpload()">Uploader une photo</button>
-  <button class="button" onclick="finalizeCover()">Enregistrer la couverture et générer mon livre</button>
+  <button class="button" id="uploadBtn">Uploader une photo</button>
+  <button class="button" id="finalizeBtn">Enregistrer la couverture et générer mon livre</button>
 </div>
 
 <script type="module">
@@ -142,6 +129,16 @@ let cropper;
 
 function triggerUpload() {
   uploadInput.click();
+}
+
+function finalizeCrop() {
+  if (cropper) {
+    const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960, fillColor: null });
+    const imgUrl = canvas.toDataURL('image/png');
+    cropper.destroy();
+    cropper = null;
+    photoArea.innerHTML = `<img src="${imgUrl}">`;
+  }
 }
 
 uploadInput.addEventListener('change', (e) => {
@@ -170,14 +167,6 @@ uploadInput.addEventListener('change', (e) => {
 
   reader.readAsDataURL(file);
 });
-
-function finalizeCrop() {
-  const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960, fillColor: null });
-  const imgUrl = canvas.toDataURL('image/png');
-  cropper.destroy();
-  cropper = null;
-  photoArea.innerHTML = `<img src="${imgUrl}">`;
-}
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && cropper) {
@@ -219,10 +208,7 @@ async function finalizeCover() {
 
     const coverBase64 = canvas.toDataURL('image/png');
 
-window.triggerUpload = triggerUpload;
-window.finalizeCover = finalizeCover;
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('covers')
       .upsert([{ id: interviewId, cover_base64: coverBase64 }]);
 
@@ -235,6 +221,12 @@ window.finalizeCover = finalizeCover;
     }
   }
 }
+
+// Liens JS au lieu de onclick dans HTML
+
+document.getElementById('uploadBtn').addEventListener('click', triggerUpload);
+document.getElementById('finalizeBtn').addEventListener('click', finalizeCover);
+
 </script>
 
 </body>
