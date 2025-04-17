@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 console.log("👋 Démarrage de server.js...");
 
@@ -16,22 +17,20 @@ const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// ✅ Middleware CORS avec log de debug
+// ✅ Middleware CORS propre avec gestion OPTIONS
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-
+    res.setHeader("Vary", "Origin");
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    console.log("➡️ Préflight OPTIONS reçu, réponse 200");
-    return res.sendStatus(200);
+    return res.status(204).send();
   }
 
   next();
