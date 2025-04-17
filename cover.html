@@ -3,98 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer une couverture</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Créer la couverture - LifeBook</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #f3e8ff, #fff0f5);
+      font-family: 'Merriweather', serif; /* ✅ Police plus "livre" */
+      background: linear-gradient(135deg, #d6b2e8, #f7d5e8);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .cover-container {
+      background-color: #f3e8ff;
+      width: 350px;
+      height: 500px;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .cover {
-      background: #f3e8ff; /* Violet clair aligné avec ton dégradé */
-      width: 320px;
-      height: 450px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      text-align: center;
       position: relative;
     }
-
-    .cover h1 {
-      font-size: 1.4em;
-      margin-bottom: 10px;
-      color: #6b1e8a;
+    .title, .subtitle {
+      text-align: center;
+      margin: 5px 0;
+      font-family: 'Merriweather', serif;
+      color: #4b145c; /* ✅ Couleur "littéraire" plus sobre */
     }
-
-    .cover h2 {
+    .title {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    .subtitle {
       font-size: 1em;
-      margin-bottom: 20px;
-      color: #8a4ba3;
       font-weight: 400;
     }
-
-    .image-placeholder {
-      background: #d9b3e4;
-      width: 100%;
-      height: 180px;
+    .upload-zone {
+      width: 80%;
+      height: 200px;
+      background: #d9d9d9;
       margin: 20px 0;
-      border-radius: 12px;
+      border: 2px dashed #aaa;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-weight: 600;
+      color: #777;
       cursor: pointer;
     }
-
-    .cover p {
-      margin: 20px 0 10px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .logo {
+    .footer-logo {
       position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1em;
-      color: #6b1e8a;
+      bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #4b145c;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-
-  <div class="cover">
-    <h1>Ajouter un titre</h1>
-    <h2>Ajouter un sous-titre</h2>
-
-    <div class="image-placeholder" id="uploadArea">
-      Ajouter une photo
-    </div>
-
-    <p>Ajouter nom(s)</p>
-
-    <div class="logo">
-      📖 LifeBook
-      <!-- On ajoutera ici ton vrai logo image plus tard -->
-    </div>
+  <div class="cover-container">
+    <div class="title">Ajouter un titre</div>
+    <div class="subtitle">Ajouter un sous-titre</div>
+    <div class="upload-zone">📷 Ajouter une photo</div>
+    <div class="footer-logo">LifeBook</div>
   </div>
-
-  <script>
-    document.getElementById('uploadArea').addEventListener('click', () => {
-      alert('Fonction upload à venir ici.');
-    });
-  </script>
-
 </body>
 </html>
