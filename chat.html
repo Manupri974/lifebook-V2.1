@@ -472,9 +472,11 @@ for (const [key, value] of urlParams.entries()) {
 result = await supabase
   .from("responses")
   .insert([{
-    user_id: user.id,
-    content: historique,
-    params: allParams // ✅ nouveau champ
+-   content: historique,
+-   params: allParams
++   user_id: user.id, // ✅ obligatoire
++   content: historique,
++   params: allParams
   }])
   .select("id")
   .single();
