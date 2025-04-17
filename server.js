@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 
 // ✅ Routes principales
 app.post("/api/generer-livre", genererLivre);
-app.use("/api/exporter-pdf", exporterPdf);
+app.post("/api/exporter-pdf", exporterPdf);
 
 // ✅ Port dynamique
 const PORT = process.env.PORT || 3000;
