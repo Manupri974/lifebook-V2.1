@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
-    const { texte } = req.body;
+    const { texte, couvertureBase64 } = req.body;
 
     // ❌ Cas : texte vide ou trop court
     if (!texte || texte.trim().length < 100) {
@@ -35,8 +35,14 @@ router.post('/', async (req, res) => {
       })
       .join("\n");
 
+    // 📸 Ajouter la couverture si présente
+    let couvertureHTML = '';
+    if (couvertureBase64) {
+      couvertureHTML = `<div style="page-break-after: always; text-align: center;"><img src="${couvertureBase64}" style="max-width: 100%; height: auto;"></div>`;
+    }
+
     // 🧩 Injecter le contenu dans le template
-    html = html.replace("<!-- contenu injecté dynamiquement -->", contenu);
+    html = html.replace("<!-- contenu injecté dynamiquement -->", `${couvertureHTML}${contenu}`);
 
     // 🖨️ Génération PDF avec Puppeteer
     const browser = await puppeteer.launch({
