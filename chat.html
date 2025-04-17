@@ -442,7 +442,7 @@ async function genererLivre() {
     btn.innerHTML = `<i class="fas fa-book"></i> Générer livre`;
   }
 }
-    async function sauvegarder() {
+async function sauvegarder() {
   status.textContent = "⏳ Sauvegarde en cours...";
   status.style.color = "black";
 
@@ -462,34 +462,32 @@ async function genererLivre() {
       .update({ content: historique })
       .eq("id", interviewId);
   } else {
-// 🔁 Récupère tous les paramètres de l’URL (sauf id)
-const urlParams = new URLSearchParams(window.location.search);
-const allParams = {};
-for (const [key, value] of urlParams.entries()) {
-  if (key !== "id") allParams[key] = value;
-}
+    // 🔁 Récupère tous les paramètres de l’URL (sauf id)
+    const urlParams = new URLSearchParams(window.location.search);
+    const allParams = {};
+    for (const [key, value] of urlParams.entries()) {
+      if (key !== "id") allParams[key] = value;
+    }
 
-result = await supabase
-  .from("responses")
-  .insert([{
--   content: historique,
--   params: allParams
-+   user_id: user.id, // ✅ obligatoire
-+   content: historique,
-+   params: allParams
-  }])
-  .select("id")
-  .single();
+    result = await supabase
+      .from("responses")
+      .insert([{
+        user_id: user.id, // ✅ On ajoute user_id ici
+        content: historique,
+        params: allParams
+      }])
+      .select("id")
+      .single();
 
-if (result.data?.id) {
-  interviewId = result.data.id;
+    if (result.data?.id) {
+      interviewId = result.data.id;
 
-  const currentParams = new URLSearchParams(window.location.search);
-  currentParams.set("id", interviewId);
+      const currentParams = new URLSearchParams(window.location.search);
+      currentParams.set("id", interviewId);
 
-  const newUrl = `${window.location.pathname}?${currentParams.toString()}`;
-  history.replaceState(null, "", newUrl);
-}
+      const newUrl = `${window.location.pathname}?${currentParams.toString()}`;
+      history.replaceState(null, "", newUrl);
+    }
   }
 
   if (result.error) {
