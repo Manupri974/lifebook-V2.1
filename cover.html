@@ -19,8 +19,8 @@
     }
     .editor-container {
       position: relative;
-      width: 437px; /* 1748/4 */
-      height: 620px; /* 2480/4 */
+      width: 437px;
+      height: 620px;
       background: #f2eafa;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
       overflow: hidden;
@@ -70,8 +70,9 @@
       background-color: rgba(255,255,255,0.7);
     }
     #photo-area img {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     #upload {
       margin-top: 10px;
@@ -136,7 +137,16 @@
       if (cropper) cropper.destroy();
       cropper = new Cropper(image, {
         aspectRatio: 3 / 2,
-        viewMode: 1
+        viewMode: 1,
+        autoCropArea: 1,
+        background: false,
+        responsive: true,
+        guides: false,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        cropBoxResizable: true,
+        dragMode: 'move'
       });
     }
 
@@ -150,7 +160,7 @@
   });
 
   function finalizeCrop() {
-    const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960 });
+    const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960, fillColor: null });
     const imgUrl = canvas.toDataURL('image/png');
     cropper.destroy();
     cropper = null;
