@@ -1,13 +1,125 @@
-<!-- ICI TON COVER.HTML CORRIGÉ -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer une couverture LifeBook</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: #f2eafa;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .editor-container {
+      position: relative;
+      width: 437px;
+      height: 620px;
+      background: #f2eafa;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    #cover {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/ChatGPT%20Image%2018%20avr.%202025%2C%2000_03_26.png') no-repeat center/cover;
+    }
+    .editable {
+      position: absolute;
+      width: 80%;
+      text-align: center;
+      left: 10%;
+      color: #333;
+      cursor: text;
+      font-family: 'Georgia', serif;
+    }
+    #title { top: 8%; font-size: 28px; font-weight: bold; }
+    #subtitle { top: 16%; font-size: 22px; font-style: italic; }
+    #author { bottom: 12%; font-size: 24px; font-style: italic; }
+    #photo-area {
+      position: absolute;
+      top: 30%;
+      left: 5%;
+      width: 90%;
+      height: 40%;
+      border: 2px dashed #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-color: rgba(255,255,255,0.7);
+    }
+    #photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #lifebook-logo {
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+      font-size: 14px;
+      color: white;
+      background-color: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 5px;
+    }
+    #actions {
+      margin: 20px 0;
+      text-align: center;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+      background-color: #a678d0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #8e57c4;
+    }
+  </style>
+</head>
 
-...
+<body>
+
+<div class="editor-container">
+  <div id="cover">
+    <div id="title" class="editable" contenteditable="true">Titre du Livre</div>
+    <div id="subtitle" class="editable" contenteditable="true">Sous-titre ici</div>
+    <div id="photo-area">Photo ici</div>
+    <div id="author" class="editable" contenteditable="true">Nom de l'Auteur</div>
+    <div id="lifebook-logo">LifeBook</div>
+  </div>
+</div>
+
+<div id="actions">
+  <input type="file" id="upload" accept="image/*">
+  <button class="button" id="uploadBtn">Uploader une photo</button>
+  <button class="button" id="finalizeBtn">Enregistrer la couverture et générer mon livre</button>
+</div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const supabase = createClient(
   'https://qgmxclxahaqnvvxhgcms.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaHFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
 );
 
 const params = new URLSearchParams(window.location.search);
@@ -34,7 +146,6 @@ uploadInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-
   reader.onload = function (event) {
     photoArea.innerHTML = `<img id="uploaded-image" src="${event.target.result}">`;
     const image = document.getElementById('uploaded-image');
@@ -53,7 +164,6 @@ uploadInput.addEventListener('change', (e) => {
       dragMode: 'move'
     });
   }
-
   reader.readAsDataURL(file);
 });
 
@@ -70,6 +180,7 @@ async function finalizeCover() {
   const ctx = canvas.getContext('2d');
 
   const background = new Image();
+  background.crossOrigin = "anonymous"; // important pour éviter erreurs CORS
   background.src = 'https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/ChatGPT%20Image%2018%20avr.%202025%2C%2000_03_26.png';
 
   background.onload = async () => {
@@ -101,4 +212,24 @@ async function finalizeCover() {
       .from('covers')
       .upsert([{ id: interviewId, cover_base64: coverBase64 }]);
 
-    if (error)
+    if (error) {
+      alert('❌ Erreur en sauvegardant la couverture');
+      console.error(error);
+    } else {
+      alert('✅ Couverture sauvegardée ! Retour au livre...');
+      window.location.href = `chat.html?id=${interviewId}`;
+    }
+  };
+
+  background.onerror = () => {
+    alert('❌ Impossible de charger l’image de fond !');
+  };
+}
+
+document.getElementById('uploadBtn').addEventListener('click', triggerUpload);
+document.getElementById('finalizeBtn').addEventListener('click', finalizeCover);
+
+</script>
+
+</body>
+</html>
