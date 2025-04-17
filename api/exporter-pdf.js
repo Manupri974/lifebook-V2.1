@@ -45,11 +45,11 @@ export default async function genererLivre(req, res) {
 
     const promptSysteme = `Tu es une biographe professionnelle. Tu racontes une histoire de vie de façon fluide, littéraire, et sensible.`;
 
-    const questionsPourCetteSequence = questions
+    const questionsAssociees = questions
       .map((q, idx) => ({ index: idx + 1, chapitre: sequenceParQuestion[idx] }))
-      .filter(q => String(q.chapitre) === String(numero))
+      .filter(q => q.chapitre == numero)
       .map(q => `Q${q.index}. ${questions[q.index - 1]}`)
-      .join("\n") || "Non disponible";
+      .join("\n");
 
     const promptUtilisateur = `
 Contexte général (à garder en tête sans reformuler) :
@@ -69,7 +69,7 @@ ${resumePourPrompt}
 
 Liste des questions associées à cette séquence :
 """
-${questionsPourCetteSequence}
+${questionsAssociees || "Non disponible"}
 """
 
 ⚠️ Tu ne dois **jamais** réécrire ces questions ni les reformuler dans le texte.
@@ -83,16 +83,15 @@ Ta mission :
 - Rédige un **chapitre fluide, vivant et littéraire** à partir de cette séquence.
 - Commence par le **titre** ci-dessus.
 - Rédige en français, ${pointDeVue}.
-- Approfondie mais n’invente rien, et n’utilise pas d’énumération mécanique.
+- Approfondis mais n’invente rien, et n’utilise pas d’énumération mécanique.
 `;
 
     console.log(`\n🧾 CHAPITRE ${numero}`);
-    console.log("📘 Titre :", chapitreTitre);
-    console.log("🧠 Contexte :", profilCondense.slice(0, 300));
-    console.log("🧵 Résumé précédent :", resumePourPrompt.slice(0, 300));
-    console.log("❓ Questions :", questionsPourCetteSequence);
-    console.log("📚 Séquence brute :", bloc.slice(0, 300));
-    console.log("✉️ PROMPT FINAL ENVOYÉ À L'API:\n", promptUtilisateur.slice(0, 1000));
+    console.log(`📘 Titre : ${chapitreTitre}`);
+    console.log(`🧠 Contexte : ${profilCondense.slice(0, 200)}...`);
+    console.log(`🧵 Résumé précédent : ${resumePourPrompt.slice(0, 200)}...`);
+    console.log(`❓ Questions : ${questionsAssociees}`);
+    console.log("📝 Prompt complet :", promptUtilisateur.slice(0, 500) + "...");
 
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -129,7 +128,10 @@ Ta mission :
             model: "gpt-3.5-turbo",
             temperature: 0.4,
             messages: [
-              { role: "system", content: "Tu es un assistant qui résume un chapitre biographique en 2-3 phrases naturelles, pour aider le chapitre suivant à garder un fil logique." },
+              {
+                role: "system",
+                content: "Tu es un assistant qui résume un chapitre biographique en 2-3 phrases naturelles, pour aider le chapitre suivant à garder un fil logique."
+              },
               { role: "user", content: chapitreNettoye }
             ]
           })
