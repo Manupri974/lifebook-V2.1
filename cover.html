@@ -4,72 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Créer la couverture - LifeBook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Merriweather', serif; /* ✅ Police plus "livre" */
-      background: linear-gradient(135deg, #d6b2e8, #f7d5e8);
-      min-height: 100vh;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #d5b4e6, #f8d5e7);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-    }
-    .cover-container {
-      background-color: #f3e8ff;
-      width: 350px;
-      height: 500px;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-    .title, .subtitle {
-      text-align: center;
-      margin: 5px 0;
       font-family: 'Merriweather', serif;
-      color: #4b145c; /* ✅ Couleur "littéraire" plus sobre */
+      color: #4b145c;
     }
-    .title {
-      font-size: 1.5em;
-      font-weight: bold;
+
+    .cover-container {
+      position: relative;
+      width: 320px;
+      height: 450px;
+      background: #f6f2fb;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 20px;
+      text-align: center;
     }
-    .subtitle {
-      font-size: 1em;
-      font-weight: 400;
-    }
-    .upload-zone {
-      width: 80%;
-      height: 200px;
-      background: #d9d9d9;
-      margin: 20px 0;
-      border: 2px dashed #aaa;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #777;
+
+    .cover-container h1, .cover-container h2 {
+      margin: 10px 0;
+      font-weight: 700;
       cursor: pointer;
     }
-    .footer-logo {
-      position: absolute;
-      bottom: 20px;
-      text-align: center;
-      font-weight: bold;
+
+    .editable {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid transparent;
+      font-family: 'Merriweather', serif;
+      font-size: 1em;
       color: #4b145c;
-      font-size: 1.2em;
+      text-align: center;
+      width: 100%;
+      margin: 5px 0;
+    }
+
+    .editable:focus {
+      outline: none;
+      border-bottom: 1px solid #4b145c;
+    }
+
+    .photo-placeholder {
+      width: 160px;
+      height: 160px;
+      background: #e0cfea;
+      border: 2px dashed #4b145c;
+      border-radius: 12px;
+      margin: 30px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9em;
+      color: #7c3c97;
+    }
+
+    button {
+      margin-top: 20px;
+      background: #a347ba;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #912ca3;
     }
   </style>
 </head>
 <body>
   <div class="cover-container">
-    <div class="title">Ajouter un titre</div>
-    <div class="subtitle">Ajouter un sous-titre</div>
-    <div class="upload-zone">📷 Ajouter une photo</div>
-    <div class="footer-logo">LifeBook</div>
+    <input type="text" id="titleInput" class="editable" value="Titre de votre livre" />
+    <input type="text" id="subtitleInput" class="editable" value="Sous-titre éventuel" />
+
+    <div class="photo-placeholder">
+      Votre photo ici
+    </div>
+
+    <button id="generateButton">Générer Livre</button>
   </div>
+
+  <script>
+    // On pourra ajouter ici plus tard la logique d'upload de photo et de sauvegarde !
+    document.getElementById("generateButton").addEventListener("click", () => {
+      alert("🚀 Génération du livre déclenchée (simulation) !");
+    });
+  </script>
 </body>
 </html>
