@@ -489,15 +489,15 @@ async function sauvegarder() {
       if (key !== "id") allParams[key] = value;
     }
 
-    result = await supabase
-      .from("responses")
-      .insert([{
-        user_id: user.id, // ✅ On ajoute user_id ici
-        content: historique,
-        params: allParams
-      }])
-      .select("id")
-      .single();
+const accessToken = session.access_token;
+
+result = await supabase
+  .from("responses")
+  .insert([{ user_id: user.id, content: historique, params: allParams }], {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  })
+  .select("id")
+  .single();
 
     if (result.data?.id) {
       interviewId = result.data.id;
