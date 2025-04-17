@@ -10,19 +10,21 @@
     body {
       margin: 0;
       background-color: #f2eafa;
-      font-family: Arial, sans-serif;
+      font-family: 'Georgia', serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       height: 100vh;
+      overflow: auto;
     }
     .editor-container {
       position: relative;
-      width: 874px; /* 1748/2 */
-      height: 1240px; /* 2480/2 */
+      width: 437px; /* 1748/4 */
+      height: 620px; /* 2480/4 */
       background: #f2eafa;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
       overflow: hidden;
+      margin-top: 20px;
     }
     #cover {
       position: relative;
@@ -37,27 +39,29 @@
       left: 10%;
       color: #333;
       cursor: text;
+      font-family: 'Georgia', serif;
     }
     #title {
-      top: 10%;
-      font-size: 36px;
+      top: 8%;
+      font-size: 28px;
       font-weight: bold;
     }
     #subtitle {
-      top: 20%;
-      font-size: 24px;
+      top: 16%;
+      font-size: 22px;
+      font-style: italic;
     }
     #author {
-      bottom: 15%;
-      font-size: 28px;
+      bottom: 12%;
+      font-size: 24px;
       font-style: italic;
     }
     #photo-area {
       position: absolute;
-      top: 35%;
-      left: 20%;
-      width: 60%;
-      height: 30%;
+      top: 30%;
+      left: 5%;
+      width: 90%;
+      height: 40%;
       border: 2px dashed #aaa;
       display: flex;
       align-items: center;
@@ -70,16 +74,16 @@
       max-height: 100%;
     }
     #upload {
-      display: none;
+      margin-top: 10px;
     }
     #lifebook-logo {
       position: absolute;
       bottom: 5%;
       right: 5%;
-      font-size: 18px;
+      font-size: 14px;
       color: white;
       background-color: rgba(0,0,0,0.5);
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 5px;
     }
     #actions {
@@ -100,7 +104,7 @@
   <div id="cover">
     <div id="title" class="editable" contenteditable="true">Titre du Livre</div>
     <div id="subtitle" class="editable" contenteditable="true">Sous-titre ici</div>
-    <div id="photo-area">Cliquez pour ajouter une photo</div>
+    <div id="photo-area">Photo ici</div>
     <div id="author" class="editable" contenteditable="true">Nom de l'Auteur</div>
     <div id="lifebook-logo">LifeBook</div>
   </div>
@@ -108,6 +112,7 @@
 
 <div id="actions">
   <input type="file" id="upload" accept="image/*">
+  <button onclick="triggerUpload()">Uploader une photo</button>
   <button onclick="generateCover()">Finaliser et Télécharger</button>
 </div>
 
@@ -116,9 +121,9 @@
   const uploadInput = document.getElementById('upload');
   let cropper;
 
-  photoArea.addEventListener('click', () => {
+  function triggerUpload() {
     uploadInput.click();
-  });
+  }
 
   uploadInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -145,7 +150,7 @@
   });
 
   function finalizeCrop() {
-    const canvas = cropper.getCroppedCanvas({ width: 1048, height: 698 });
+    const canvas = cropper.getCroppedCanvas({ width: 1568, height: 960 });
     const imgUrl = canvas.toDataURL('image/png');
     cropper.destroy();
     cropper = null;
@@ -166,19 +171,19 @@
 
       const photo = photoArea.querySelector('img');
       if (photo) {
-        ctx.drawImage(photo, 350, 868, 1048, 698);
+        ctx.drawImage(photo, 174, 744, 1400, 992);
       }
 
-      ctx.font = 'bold 80px Arial';
+      ctx.font = 'bold 100px Georgia';
       ctx.fillStyle = '#333';
       ctx.textAlign = 'center';
       ctx.fillText(document.getElementById('title').innerText, canvas.width/2, 250);
 
-      ctx.font = '50px Arial';
-      ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 450);
+      ctx.font = 'italic 70px Georgia';
+      ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 400);
 
-      ctx.font = '60px Arial italic';
-      ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2100);
+      ctx.font = 'italic 80px Georgia';
+      ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2200);
 
       ctx.font = 'bold 40px Arial';
       ctx.fillStyle = 'white';
