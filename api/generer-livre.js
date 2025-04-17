@@ -59,7 +59,6 @@ Séquence ${numero} à transformer en chapitre :
 """
 ${bloc}
 """
-
 Ta mission :
 - Rédige un **chapitre fluide, vivant et littéraire** à partir de cette séquence.
 - Commence par un **titre stylisé** pour le chapitre ${numero}, par exemple : "Chapitre ${numero} — Une enfance libre".
@@ -69,7 +68,7 @@ Ta mission :
 - Ne complète pas avec des éléments imaginaires.
 - Tu dois t'arrêter après avoir transformé cette séquence en un chapitre complet et fluide.
 - N’utilise pas d’énumérations mécaniques.
-
+;
     console.log(`📤 Génération du chapitre ${numero}...`);
     console.log("🧩 Résumé utilisé comme contexte :", resumePourPrompt);
 
