@@ -319,24 +319,32 @@ async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
 }
-    async function verifierCouverture() {
+  async function verifierCouverture() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (!session || error) {
+    console.log('⛔️ Pas de session utilisateur, pas de vérification de couverture.');
+    return; // Ne pas bloquer le reste du chat
+  }
+
+  interviewId = new URLSearchParams(window.location.search).get("id");
+
   if (!interviewId) return;
-  const { data, error } = await supabase
+
+  const { data, error: coverError } = await supabase
     .from('covers')
     .select('id')
     .eq('id', interviewId)
     .single();
+
+  if (coverError) {
+    console.warn('Pas de couverture trouvée ou accès refusé (normal au début)');
+    return;
+  }
+
   if (data) {
     document.getElementById("generateBtn").disabled = false;
   }
 }
-document.getElementById("generateCoverBtn").addEventListener("click", () => {
-  if (!interviewId) {
-    alert("Vous devez sauvegarder l'interview avant de générer la couverture.");
-    return;
-  }
-  window.location.href = `cover.html?id=${interviewId}`;
-});
 async function genererLivre() {
   if (!reponses || reponses.length < 4) {
     alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
