@@ -1,112 +1,196 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer une couverture A5</title>
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2eafa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .cover-container {
-            position: relative;
-            width: 420px;
-            height: 595px;
-            background-image: url('Sans titre (148 x 210 mm) (1).png');
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-        }
-        .editable {
-            cursor: pointer;
-            background: rgba(255,255,255,0.6);
-            padding: 5px;
-            border-radius: 4px;
-        }
-        #image-placeholder {
-            width: 100%;
-            height: 300px;
-            border: 2px dashed #aaa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            position: relative;
-            overflow: hidden;
-        }
-        #image-placeholder img {
-            width: 100%;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer une couverture LifeBook</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: #f2eafa;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .editor-container {
+      position: relative;
+      width: 874px; /* 1748/2 */
+      height: 1240px; /* 2480/2 */
+      background: #f2eafa;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    #cover {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('Sans titre (148 x 210 mm) (1).png') no-repeat center/cover;
+    }
+    .editable {
+      position: absolute;
+      width: 80%;
+      text-align: center;
+      left: 10%;
+      color: #333;
+      cursor: text;
+    }
+    #title {
+      top: 10%;
+      font-size: 36px;
+      font-weight: bold;
+    }
+    #subtitle {
+      top: 20%;
+      font-size: 24px;
+    }
+    #author {
+      bottom: 15%;
+      font-size: 28px;
+      font-style: italic;
+    }
+    #photo-area {
+      position: absolute;
+      top: 35%;
+      left: 20%;
+      width: 60%;
+      height: 30%;
+      border: 2px dashed #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-color: rgba(255,255,255,0.7);
+    }
+    #photo-area img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    #upload {
+      display: none;
+    }
+    #lifebook-logo {
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+      font-size: 18px;
+      color: white;
+      background-color: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    #actions {
+      margin-top: 20px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="cover-container">
-        <h1 class="editable" contenteditable="true">Ajouter un titre</h1>
-        <h3 class="editable" contenteditable="true">Ajouter un sous-titre</h3>
 
-        <div id="image-placeholder">Cliquez pour ajouter une photo</div>
-        <input type="file" id="file-input" accept="image/*">
+<div class="editor-container">
+  <div id="cover">
+    <div id="title" class="editable" contenteditable="true">Titre du Livre</div>
+    <div id="subtitle" class="editable" contenteditable="true">Sous-titre ici</div>
+    <div id="photo-area">Cliquez pour ajouter une photo</div>
+    <div id="author" class="editable" contenteditable="true">Nom de l'Auteur</div>
+    <div id="lifebook-logo">LifeBook</div>
+  </div>
+</div>
 
-        <h3 class="editable" contenteditable="true">Ajouter nom(s)</h3>
-        <button id="save-button">Enregistrer la couverture</button>
-    </div>
+<div id="actions">
+  <input type="file" id="upload" accept="image/*">
+  <button onclick="generateCover()">Finaliser et Télécharger</button>
+</div>
 
-    <script>
-        const placeholder = document.getElementById('image-placeholder');
-        const fileInput = document.getElementById('file-input');
-        let cropper;
+<script>
+  const photoArea = document.getElementById('photo-area');
+  const uploadInput = document.getElementById('upload');
+  let cropper;
 
-        placeholder.addEventListener('click', () => fileInput.click());
+  photoArea.addEventListener('click', () => {
+    uploadInput.click();
+  });
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
+  uploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
 
-            reader.onload = function (event) {
-                placeholder.innerHTML = '<img id="uploaded-image" src="' + event.target.result + '">';
+    reader.onload = function (event) {
+      photoArea.innerHTML = `<img id="uploaded-image" src="${event.target.result}">`;
+      const image = document.getElementById('uploaded-image');
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(image, {
+        aspectRatio: 3 / 2,
+        viewMode: 1
+      });
+    }
 
-                const image = document.getElementById('uploaded-image');
+    reader.readAsDataURL(file);
+  });
 
-                if (cropper) cropper.destroy();
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && cropper) {
+      finalizeCrop();
+    }
+  });
 
-                cropper = new Cropper(image, {
-                    aspectRatio: 3 / 2,
-                    viewMode: 1,
-                });
-            }
+  function finalizeCrop() {
+    const canvas = cropper.getCroppedCanvas({ width: 1048, height: 698 });
+    const imgUrl = canvas.toDataURL('image/png');
+    cropper.destroy();
+    cropper = null;
+    photoArea.innerHTML = `<img src="${imgUrl}">`;
+  }
 
-            reader.readAsDataURL(file);
-        });
+  function generateCover() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1748;
+    canvas.height = 2480;
+    const ctx = canvas.getContext('2d');
 
-        document.getElementById('save-button').addEventListener('click', () => {
-            if (cropper) {
-                const canvas = cropper.getCroppedCanvas({ width: 400, height: 300 });
-                placeholder.innerHTML = '<img src="' + canvas.toDataURL() + '">';
-                cropper.destroy();
-                cropper = null;
-            }
+    const background = new Image();
+    background.src = 'Sans titre (148 x 210 mm) (1).png';
 
-            alert('Votre couverture est prête à être sauvegardée ou exportée.');
-        });
-    </script>
+    background.onload = () => {
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+      const photo = photoArea.querySelector('img');
+      if (photo) {
+        ctx.drawImage(photo, 350, 868, 1048, 698);
+      }
+
+      ctx.font = 'bold 80px Arial';
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'center';
+      ctx.fillText(document.getElementById('title').innerText, canvas.width/2, 250);
+
+      ctx.font = '50px Arial';
+      ctx.fillText(document.getElementById('subtitle').innerText, canvas.width/2, 450);
+
+      ctx.font = '60px Arial italic';
+      ctx.fillText(document.getElementById('author').innerText, canvas.width/2, 2100);
+
+      ctx.font = 'bold 40px Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText('LifeBook', canvas.width - 150, canvas.height - 50);
+
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'lifebook-couverture.png';
+      link.click();
+    }
+  }
+</script>
+
 </body>
 </html>
