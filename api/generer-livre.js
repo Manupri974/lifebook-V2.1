@@ -68,7 +68,11 @@ Ta mission :
 - Ne complète pas avec des éléments imaginaires.
 - Tu dois t'arrêter après avoir transformé cette séquence en un chapitre complet et fluide.
 - N’utilise pas d’énumérations mécaniques.
-;
+- N’utilise pas d’énumérations mécaniques.
+`;
+console.log(`📤 Génération du chapitre ${numero}...`);
+console.log("🧩 Résumé utilisé comme contexte :", resumePourPrompt);
+
     console.log(`📤 Génération du chapitre ${numero}...`);
     console.log("🧩 Résumé utilisé comme contexte :", resumePourPrompt);
 
