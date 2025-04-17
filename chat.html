@@ -254,11 +254,12 @@
 <textarea id="userInput" placeholder="Votre réponse..." rows="1"></textarea>
       <button id="speechButton"><i class="fas fa-microphone"></i></button>
     </div>
-    <div class="button-group">
-      <button id="sendBtn"><i class="fas fa-paper-plane"></i> Envoyer</button>
-      <button id="generateBtn"><i class="fas fa-book"></i> Générer livre</button>
-      <button id="saveButton"><i class="fas fa-save"></i> Sauvegarder</button>
-    </div>
+<div class="button-group">
+  <button id="sendBtn"><i class="fas fa-paper-plane"></i> Envoyer</button>
+  <button id="generateCoverBtn"><i class="fas fa-image"></i> Générer couverture</button>
+  <button id="generateBtn" disabled><i class="fas fa-book"></i> Générer livre</button>
+  <button id="saveButton"><i class="fas fa-save"></i> Sauvegarder</button>
+</div>
     <div id="waveform"></div>
     <div id="messageStatus"></div>
   </div>
@@ -266,10 +267,9 @@
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-    const supabase = createClient(
-      'https://qgmxclxahaqnvvxhgcms.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
-    );
+import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+const supabase = createClient('https://qgmxclxahaqnvvxhgcms.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaHFudnhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE');
 
 let questions = [];
 let titreChapitres = {};
@@ -321,6 +321,24 @@ async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
 }
+    async function verifierCouverture() {
+  if (!interviewId) return;
+  const { data, error } = await supabase
+    .from('covers')
+    .select('id')
+    .eq('id', interviewId)
+    .single();
+  if (data) {
+    document.getElementById("generateBtn").disabled = false;
+  }
+}
+document.getElementById("generateCoverBtn").addEventListener("click", () => {
+  if (!interviewId) {
+    alert("Vous devez sauvegarder l'interview avant de générer la couverture.");
+    return;
+  }
+  window.location.href = `cover.html?id=${interviewId}`;
+});
 async function genererLivre() {
   if (!reponses || reponses.length < 4) {
     alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
@@ -335,9 +353,6 @@ async function genererLivre() {
   const perso = new URLSearchParams(window.location.search).get("perso") || "il";
 
   try {
-    console.log("🚀 Étape 1 : Construction des segments...");
-
-    // ✅ Reconstruction automatique des segments à partir de reponses + sequenceParQuestion
     const segments = {};
     for (let i = 0; i < reponses.length; i++) {
       const seq = sequenceParQuestion?.[i]?.toString() || "1";
@@ -345,20 +360,14 @@ async function genererLivre() {
       if (reponses[i]?.trim()) segments[seq].push(reponses[i].trim());
     }
 
-    console.log("✅ Segments reconstruits :", segments);
-
     const payload = {
       segments,
       perso,
       questions,
       titreChapitres,
-      sequenceParQuestion // ✅ On l'envoie au backend pour cibler les bonnes questions
+      sequenceParQuestion
     };
 
-    console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
-
-    // ✅ Envoi au backend
-    console.log("📤 Étape 2 : Envoi au backend...");
     const response = await fetch(`${API_BASE}/api/generer-livre`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -371,14 +380,12 @@ async function genererLivre() {
     }
 
     const rawText = await response.text();
-    console.log("📦 Réponse brute reçue :", rawText.slice(0, 300));
-
     let data;
     try {
       data = JSON.parse(rawText);
     } catch (err) {
       console.error("❌ Erreur de parsing JSON :", err);
-      alert("⚠️ La réponse du serveur n’a pas pu être interprétée. Regarde la console.");
+      alert("⚠️ La réponse du serveur n’a pas pu être interprétée.");
       return;
     }
 
@@ -388,23 +395,31 @@ async function genererLivre() {
     }
 
     const texteFinal = data.texte.trim();
-    console.log("🖨️ Étape 3 : Génération du PDF stylisé via backend...");
+
+    const coverData = await supabase
+      .from('covers')
+      .select('cover_base64')
+      .eq('id', interviewId)
+      .single();
+
+    if (!coverData?.data?.cover_base64) {
+      alert('Couverture manquante. Veuillez la générer avant de créer le livre.');
+      return;
+    }
 
     const pdfResponse = await fetch(`${API_BASE}/api/exporter-pdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ texte: texteFinal })
+      body: JSON.stringify({ texte: texteFinal, cover_base64: coverData.data.cover_base64 })
     });
 
     if (!pdfResponse.ok) {
-      console.error("❌ PDF non généré :", pdfResponse.status);
       alert("❌ Le serveur n’a pas réussi à générer le PDF.");
       return;
     }
 
     const blob = await pdfResponse.blob();
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = "LifeBook.pdf";
@@ -415,10 +430,10 @@ async function genererLivre() {
     alert("📘 Livre généré avec succès !");
   } catch (error) {
     console.error("❌ Erreur lors de la génération :", error);
-    alert("❌ Une erreur est survenue pendant la génération. Voir la console.");
+    alert("❌ Une erreur est survenue pendant la génération.");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+    btn.innerHTML = `<i class="fas fa-book"></i> Générer livre`;
   }
 }
     async function sauvegarder() {
