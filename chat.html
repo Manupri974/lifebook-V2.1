@@ -267,7 +267,24 @@
   <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-const supabase = createClient('https://qgmxclxahaqnvvxhgcms.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaHFudnhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE');
+const supabaseUrl = 'https://qgmxclxahaqnvvxhgcms.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaHFudnhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE';
+
+const supabase = createClient(
+  supabaseUrl,
+  supabaseAnonKey,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('supabase.auth.token') || '{}')?.access_token || ''}`
+      }
+    }
+  }
+);
 
 let questions = [];
 let titreChapitres = {};
