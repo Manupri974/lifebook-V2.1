@@ -64,8 +64,11 @@ Ta mission :
 - Rédige un **chapitre fluide, vivant et littéraire** à partir de cette séquence.
 - Commence par un **titre stylisé** pour le chapitre ${numero}, par exemple : "Chapitre ${numero} — Une enfance libre".
 - Rédige en français, ${pointDeVue}.
-- N’invente rien, et n’utilise pas d’énumération mécanique.
-`;
+- Approfondis uniquement à partir des éléments donnés, sans inventer de nouvelles informations.
+- Utilise le **contexte général** et le **résumé précédent** **pour garantir la cohérence de ton récit**, sans en recopier littéralement le contenu.
+- Ne complète pas avec des éléments imaginaires.
+- Tu dois t'arrêter après avoir transformé cette séquence en un chapitre complet et fluide.
+- N’utilise pas d’énumérations mécaniques.
 
     console.log(`📤 Génération du chapitre ${numero}...`);
     console.log("🧩 Résumé utilisé comme contexte :", resumePourPrompt);
