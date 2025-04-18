@@ -199,26 +199,26 @@ export const questionsParChapitre = {
     "Qu'est-ce qui vous attirait ou vous rebutait dans les autres ?"
   ],
   25: [
-    "Comment avez-vous rencontré un ou une partenaire de vie important(e) ?",
+    "Comment avez-vous rencontré un ou une partenaire (amour ou amitié) de vie important(e) ?",
     "Quelles ont été les étapes clés de votre relation ?",
     "Un souvenir de complicité profonde dans votre relation ?",
-    "Quels apprentissages personnels avez-vous fait en couple ?",
-    "Comment votre vision de l'amour a-t-elle évolué ?"
+    "Quels apprentissages personnels avez-vous fait ensemble ?",
+    "Comment votre vision de l'amour et de l'amitié a-t-elle évolué ?"
   ],
   26: [
-    "Comment avez-vous décidé de vous engager officiellement (mariage, PACS, etc.) ?",
-    "Quel souvenir gardez-vous de ce moment d'engagement ?",
-    "Comment votre quotidien a-t-il changé avec cet engagement ?",
-    "Quels défis ou joies avez-vous traversés à deux ?",
-    "Un conseil que vous aimeriez transmettre sur la vie à deux ?"
-  ],
-  27: [
-    "Comment avez-vous vécu l'arrivée d'un enfant (si c'est le cas) ?",
-    "Qu'avez-vous ressenti lors de la naissance ?",
-    "Comment votre quotidien s'est-il transformé ?",
-    "Qu'avez-vous découvert sur vous-même en devenant parent ?",
-    "Quel espoir ou valeur principale souhaitez-vous transmettre ?"
-  ],
+  "Y a-t-il un projet, une cause ou un rêve dans lequel vous vous êtes investi(e) particulièrement ?",
+  "Quel a été le déclic pour vous lancer dans cet engagement personnel ?",
+  "Un souvenir fort d'effort, de passion ou de persévérance dans ce projet ?",
+  "Quels défis avez-vous rencontrés en poursuivant ce qui comptait pour vous ?",
+  "Comment cet engagement a-t-il façonné votre vision de la vie ou de l'avenir ?"
+],
+27: [
+  "Avez-vous eu l'envie ou l'occasion de transmettre quelque chose à une personne plus jeune (vos enfants par exemple) ou à votre entourage ?",
+  "Un moment où vous vous êtes senti(e) responsable pour autrui ?",
+  "Comment votre quotidien a-t-il changé face à des engagements plus profonds (projets, enfants, mentorat...) ?",
+  "Qu'avez-vous découvert sur vous-même en prenant soin ou en guidant quelqu’un ou quelque chose ?",
+  "Quelle valeur ou quel message aimeriez-vous laisser derrière vous, même sans descendance directe ?"
+],
   28: [
     "Si vous deviez faire un bilan de votre parcours jusqu’à aujourd'hui, que retiendriez-vous ?",
     "Quelles sont vos plus grandes fiertés ?",
