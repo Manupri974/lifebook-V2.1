@@ -23,9 +23,9 @@ export const titreChapitres = {
   22: "Chapitre 22 — Voyages, découvertes et ouverture au monde",
   23: "Chapitre 23 — Expériences marquantes et défis personnels",
   24: "Chapitre 24 — Rencontres importantes et cercles sociaux",
-  25: "Chapitre 25 — Vie de couple, engagements amoureux",
-  26: "Chapitre 26 — Mariage, union ou partenariat de vie",
-  27: "Chapitre 27 — Parentalité et transmission",
+  25: "Chapitre 25 — Rencontre déterminante",
+  26: "Chapitre 26 — Engagements personnels et projets de cœur",
+  27: "Chapitre 27 — Transmission, influence et héritage personnel",
   28: "Chapitre 28 — Bilan de vie jeune adulte"
 };
 
