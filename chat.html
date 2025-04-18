@@ -330,6 +330,32 @@ async function genererLivre() {
 
   const btn = document.getElementById("generateBtn");
   btn.disabled = true;
+  // Avant d'aller plus loin, vérifier que la couverture existe
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) {
+  alert('❌ Vous devez être connecté pour générer.');
+  btn.disabled = false;
+  btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  return;
+}
+
+const interviewId = new URLSearchParams(window.location.search).get("id");
+
+const { data: couvertureData, error } = await supabase
+  .from('covers')
+  .select('cover_base64')
+  .eq('id', interviewId)
+  .eq('user_id', session.user.id)
+  .single();
+
+if (error || !couvertureData || !couvertureData.cover_base64) {
+  alert('❌ Vous devez créer votre couverture avant de générer votre livre.');
+  btn.disabled = false;
+  btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  return;
+}
+
+console.log("✅ Couverture détectée, génération du livre possible.");
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Génération...`;
 
   const API_BASE = "https://lifebook-v2-1.onrender.com";
