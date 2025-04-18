@@ -1,93 +1,233 @@
-// 📘 Template : Biographie longue / Moi / 25-35 ans / 3e personne
-
-export const systemPrompt = {
-  role: "system",
-  content: `
-Tu es LifeBook, une biographe professionnelle chaleureuse et précise.
-Tu mènes une interview biographique longue, selon une trame fixe de 45 questions, à poser **dans l'ordre exact**, **une par une**, **sans jamais les reformuler ni les regrouper**.
-
-Tu suis une **structure immuable** pour chaque question, composée de **3 messages consécutifs** :
-
-1. Message 1 : tu poses la question n°X de la trame.
-2. Message 2 : tu réagis brièvement à la réponse, puis poses une **relance concrète** (souvenir, émotion, détail).
-3. Message 3 : tu fais une **deuxième relance**, plus intime ou précise.
-
-✅ **Tu recommences cette structure pour chaque nouvelle question.**
-
-⛔ Tu ne regroupes jamais plusieurs actions dans un message.
-⛔ Tu ne sautes jamais les deux relances, même si la réponse semble complète.
-⛔ Tu n'écris jamais plus de 2 phrases par message.
-
-🎯 Ton but est de recueillir des réponses riches, humaines, et sincères, pour créer un **récit biographique vivant et nuancé**.
-
-Tu écris le livre à la **troisième personne**, même si la personne parle d'elle-même. Exemple :
-> *"Emmanuel est né à La Réunion en 1988. Il garde un souvenir fort de ses premières sorties à la plage."*
-
-Tu commences l’interview par une phrase d’introduction chaleureuse, puis tu poses la première question :
-> "Pour mieux vous connaître, quel est votre âge et votre prénom ?"
-
-Voici la trame des 45 questions à suivre **strictement** :
-1. Quel est votre prénom ?
-2. Comment ce prénom a-t-il été choisi ? Avez-vous une anecdote ?
-3. Quel âge avez-vous aujourd'hui ?
-4. Où vivez-vous actuellement, et qu'est-ce que vous aimez dans cet endroit ?
-5. Quand et où êtes-vous né(e) ?
-6. Quel souvenir gardez-vous de votre quartier ou maison d'enfance ?
-7. Quelle relation aviez-vous avec vos parents ?
-8. Aviez-vous des frères et sœurs ? Quelle était votre place dans la fratrie ?
-9. Quel est un souvenir marquant de votre enfance ?
-10. Quelle était votre attitude à l'école, enfant ?
-11. Y a-t-il un professeur ou une professeure qui vous a marqué(e) ?
-12. Quel était votre rêve d'enfant ?
-13. Quelle activité ou passion occupait vos journées à l'adolescence ?
-14. Quels liens aviez-vous avec votre groupe d'amis ?
-15. Avez-vous connu une période de rupture ou de rébellion ?
-16. Quel a été votre parcours après le bac ou à la fin de votre scolarité ?
-17. Avez-vous changé de voie ou eu des doutes ?
-18. Quel souvenir fort gardez-vous de cette période d'études ou de transition ?
-19. Quel a été votre premier véritable emploi ?
-20. Quelle a été votre plus grande fierté professionnelle jusqu'ici ?
-21. Avez-vous connu des moments charnières dans votre vie pro ?
-22. Avez-vous déjà changé radicalement de projet ou de rythme de vie ?
-23. Quelle est votre plus belle réussite personnelle à ce jour ?
-24. Quels liens gardez-vous avec votre famille aujourd'hui ?
-25. Quelle place prennent les amitiés dans votre vie adulte ?
-26. Avez-vous connu des amitiés longues ou marquantes ?
-27. Quel est le lien affectif qui vous a le plus construit ?
-28. Avez-vous vécu une histoire d'amour qui a changé votre façon d'aimer ?
-29. Vivez-vous aujourd'hui en couple ou en famille ?
-30. Avez-vous des enfants ou en souhaitez-vous ?
-31. Que représentent pour vous aujourd'hui la stabilité et les engagements ?
-32. Comment gérez-vous les équilibres entre vie pro et vie perso ?
-33. Y a-t-il une expérience qui vous a fait grandir ces dernières années ?
-34. Quelle est votre vision du bonheur aujourd'hui ?
-35. Avez-vous des projets personnels ou familiaux pour les années à venir ?
-36. Quel est votre lien à l'engagement ou à la solidarité ?
-37. Y a-t-il un combat ou une cause qui vous touche particulièrement ?
-38. Quel regard portez-vous sur votre parcours jusqu'à maintenant ?
-39. Quelle qualité admirez-vous chez les autres ?
-40. Quelle qualité aimeriez-vous développer davantage chez vous ?
-41. Que vous a appris la vie sur vous-même jusqu'à présent ?
-42. Que dirait votre "vous" de 18 ans s'il vous voyait aujourd'hui ?
-43. Quels sont les petits plaisirs ou rituels qui vous font du bien ?
-44. Qu'aimeriez-vous transmettre à vos proches ou à la génération suivante ?
-45. Quelle image ou mémoire aimeriez-vous laisser de vous ?
-`
+export const titreChapitres = {
+  1: "Chapitre 1 — Origines et naissance",
+  2: "Chapitre 2 — Premiers souvenirs d'enfance",
+  3: "Chapitre 3 — Maison, famille et ambiance de vie",
+  4: "Chapitre 4 — Premières sensations et émotions",
+  5: "Chapitre 5 — Jeux, imagination et découvertes",
+  6: "Chapitre 6 — Relations avec les parents",
+  7: "Chapitre 7 — Fratrie et liens familiaux",
+  8: "Chapitre 8 — École primaire et premiers apprentissages",
+  9: "Chapitre 9 — Premières passions et talents",
+  10: "Chapitre 10 — Premiers amis et sociabilité",
+  11: "Chapitre 11 — Vacances et moments d'évasion",
+  12: "Chapitre 12 — Passage à l'adolescence",
+  13: "Chapitre 13 — Changements physiques et émotionnels",
+  14: "Chapitre 14 — Premiers défis et affirmations personnelles",
+  15: "Chapitre 15 — Amitiés adolescentes et influences",
+  16: "Chapitre 16 — Premiers sentiments amoureux",
+  17: "Chapitre 17 — Déceptions, ruptures et apprentissages",
+  18: "Chapitre 18 — Choix d'orientation scolaire",
+  19: "Chapitre 19 — Fin de l'adolescence et premiers choix d'adulte",
+  20: "Chapitre 20 — Premiers pas dans le monde du travail",
+  21: "Chapitre 21 — Gagner son indépendance",
+  22: "Chapitre 22 — Voyages, découvertes et ouverture au monde",
+  23: "Chapitre 23 — Expériences marquantes et défis personnels",
+  24: "Chapitre 24 — Rencontres importantes et cercles sociaux",
+  25: "Chapitre 25 — Vie de couple, engagements amoureux",
+  26: "Chapitre 26 — Mariage, union ou partenariat de vie",
+  27: "Chapitre 27 — Parentalité et transmission",
+  28: "Chapitre 28 — Bilan de vie jeune adulte"
 };
 
-export const sequenceParQuestion = [
-  1,1,1, 1,1,1, 1,1,1, 1,1,1, 1,1,1,      // Q1–5
-  2,2,2, 2,2,2, 2,2,2, 2,2,2,             // Q6–9
-  3,3,3, 3,3,3, 3,3,3, 3,3,3,             // Q10–13
-  4,4,4, 4,4,4, 4,4,4,                    // Q14–16
-  5,5,5, 5,5,5, 5,5,5,                    // Q17–19
-  6,6,6, 6,6,6, 6,6,6, 6,6,6,             // Q20–23
-  7,7,7, 7,7,7, 7,7,7,                    // Q24–26
-  8,8,8, 8,8,8, 8,8,8,                    // Q27–29
-  9,9,9, 9,9,9, 9,9,9,                    // Q30–32
-  10,10,10, 10,10,10, 10,10,10,           // Q33–35
-  11,11,11, 11,11,11,                     // Q36–37
-  12,12,12, 12,12,12, 12,12,12,           // Q38–40
-  13,13,13, 13,13,13, 13,13,13,           // Q41–43
-  14,14,14, 14,14,14                      // Q44–45
-];
+export const questionsParChapitre = {
+  1: [
+    "Quel est votre prénom, votre date et lieu de naissance ?",
+    "Votre prénom a-t-il une signification particulière dans votre famille ?",
+    "Où êtes-vous né(e) ? Que représente ce lieu pour vous ?",
+    "Avez-vous entendu des anecdotes sur votre naissance ?",
+    "Quel contexte familial entourait votre venue au monde ?"
+  ],
+  2: [
+    "Quels sont vos tout premiers souvenirs d’enfance ?",
+    "Un objet, une odeur ou une chanson associé à vos premières années ?",
+    "Quel est le souvenir le plus ancien dont vous êtes certain(e) ?",
+    "Quelle était l'ambiance générale de votre petite enfance ?",
+    "Un moment d'émerveillement ou de peur que vous avez vécu petit(e) ?"
+  ],
+  3: [
+    "À quoi ressemblait votre maison ou votre lieu de vie dans votre enfance ?",
+    "Comment décririez-vous votre chambre d’enfant ?",
+    "Quels étaient les bruits ou les odeurs familiers à votre foyer ?",
+    "Un lieu dans la maison où vous vous sentiez particulièrement bien ?",
+    "Quelle place votre maison avait-elle dans votre imaginaire enfantin ?"
+  ],
+  4: [
+    "Quels souvenirs sensoriels vous viennent de vos premières années (bruits, couleurs) ?",
+    "Une émotion dominante liée à votre toute petite enfance ?",
+    "Avez-vous un souvenir lié à une fête de famille ?",
+    "Un événement marquant qui vous a ému(e) enfant ?",
+    "Comment exprimiez-vous vos émotions étant jeune ?"
+  ],
+  5: [
+    "Quels jeux ou jouets occupaient votre temps enfant ?",
+    "Préférez-vous jouer seul(e) ou en groupe ?",
+    "Inventiez-vous des mondes imaginaires ou des histoires ?",
+    "Quel était votre héros ou personnage préféré ?",
+    "Un souvenir précis d’un grand moment de jeu ou de création ?"
+  ],
+  6: [
+    "Quel lien aviez-vous avec vos parents dans votre petite enfance ?",
+    "Un geste ou une habitude tendre partagé avec l'un de vos parents ?",
+    "Avez-vous ressenti une figure d’autorité ou de réconfort ?",
+    "Quel rôle prenaient vos parents dans votre quotidien ?",
+    "Comment décririez-vous leur manière de vous élever ?"
+  ],
+  7: [
+    "Avez-vous des frères et sœurs ?",
+    "Comment se passaient vos relations avec eux dans l'enfance ?",
+    "Un moment de complicité ou de conflit avec eux ?",
+    "Vous sentiez-vous protégé(e) ou en compétition ?",
+    "Quelle était la dynamique familiale avec vos frères et sœurs ?"
+  ],
+  8: [
+    "Comment s’est passée votre entrée à l’école primaire ?",
+    "Un souvenir marquant de votre toute première rentrée scolaire ?",
+    "Quel genre d’élève étiez-vous enfant ?",
+    "Un enseignant ou une enseignante qui vous a marqué(e) ?",
+    "Qu’aimiez-vous ou détestiez-vous à l'école à cette époque ?"
+  ],
+  9: [
+    "Aviez-vous une passion ou un talent particulier dans votre enfance ?",
+    "Comment avez-vous découvert cette passion ?",
+    "Avez-vous été encouragé(e) par quelqu’un ?",
+    "Un souvenir d'une grande fierté liée à cette activité ?",
+    "Cette passion existe-t-elle encore aujourd’hui sous une autre forme ?"
+  ],
+  10: [
+    "Qui étaient vos amis les plus proches dans votre enfance ?",
+    "Comment créiez-vous des liens à cette époque ?",
+    "Un souvenir inoubliable partagé avec un(e) ami(e) ?",
+    "Aviez-vous un ou une meilleure ami(e) ?",
+    "Comment avez-vous vécu vos premières amitiés perdues ?"
+  ],
+  11: [
+    "Quels souvenirs gardez-vous de vos vacances d’enfant ?",
+    "Un lieu de vacances qui a marqué votre enfance ?",
+    "Quel était votre rituel préféré pendant les vacances ?",
+    "Avec qui partiez-vous généralement ?",
+    "Une aventure ou mésaventure de vacances qui vous a marqué(e) ?"
+  ],
+  12: [
+    "Comment avez-vous vécu votre entrée dans l’adolescence ?",
+    "Un changement physique ou émotionnel qui vous a frappé(e) ?",
+    "Quelles étaient vos attentes ou vos craintes en devenant adolescent(e) ?",
+    "Un événement qui symbolise pour vous ce passage ?",
+    "Quels étaient vos rêves à l'aube de l'adolescence ?"
+  ],
+  13: [
+    "Quels changements dans votre corps vous ont marqué(e) ?",
+    "Comment avez-vous vécu ces transformations ?",
+    "Votre regard sur vous-même a-t-il changé à cette époque ?",
+    "Comment votre entourage réagissait-il à ces évolutions ?",
+    "Une anecdote amusante ou difficile liée à cette période ?"
+  ],
+  14: [
+    "Quand avez-vous ressenti votre première affirmation personnelle ?",
+    "Un acte de révolte ou d’indépendance marquant ?",
+    "Comment réagissait votre entourage face à vos affirmations ?",
+    "Avez-vous eu un modèle d'inspiration à cette époque ?",
+    "Qu'est-ce qui a forgé votre caractère adolescent ?"
+  ],
+  15: [
+    "Quels amis ont le plus compté durant votre adolescence ?",
+    "Un souvenir fort partagé avec vos amis ?",
+    "Votre manière de choisir vos amis a-t-elle changé à ce moment-là ?",
+    "Avez-vous vécu une trahison ou une grande solidarité ?",
+    "Quelle importance avaient les groupes d'appartenance pour vous ?"
+  ],
+  16: [
+    "Quand avez-vous ressenti vos premiers sentiments amoureux ?",
+    "Comment avez-vous vécu votre premier amour ?",
+    "Une rencontre ou un moment amoureux marquant ?",
+    "Comment perceviez-vous l’amour à cette époque ?",
+    "Un souvenir heureux ou douloureux lié à votre première histoire ?"
+  ],
+  17: [
+    "Avez-vous vécu une rupture difficile dans votre jeunesse ?",
+    "Comment avez-vous surmonté vos premières déceptions ?",
+    "Qu’avez-vous appris de vos premières histoires d’amour ?",
+    "Votre vision de l’amour a-t-elle changé après ces expériences ?",
+    "Un moment de renaissance ou de reconquête de soi ?"
+  ],
+  18: [
+    "Comment avez-vous choisi votre orientation scolaire ou professionnelle ?",
+    "Un rêve de métier que vous aviez à l'adolescence ?",
+    "Des pressions ou influences ont-elles joué un rôle ?",
+    "Un moment de doute ou d'excitation au sujet de l'avenir ?",
+    "Comment envisagiez-vous votre futur à cette époque ?"
+  ],
+  19: [
+    "Comment avez-vous vécu la fin de votre adolescence ?",
+    "Quelles décisions importantes avez-vous dû prendre ?",
+    "Un événement qui symbolise votre entrée dans l’âge adulte ?",
+    "Quels étaient vos plus grands espoirs ou craintes ?",
+    "Un moment de fierté ou d’émancipation marquante ?"
+  ],
+  20: [
+    "Quelle a été votre première expérience professionnelle ?",
+    "Comment avez-vous vécu vos débuts dans le monde du travail ?",
+    "Un souvenir marquant de votre premier emploi ?",
+    "Quels défis avez-vous rencontrés en devenant autonome ?",
+    "Un apprentissage clé issu de vos premières années de travail ?"
+  ],
+  21: [
+    "Quand avez-vous commencé à vivre de façon indépendante ?",
+    "Comment avez-vous choisi votre premier logement ?",
+    "Un souvenir fort de vos premiers temps en autonomie ?",
+    "Quelles libertés ou responsabilités ont le plus compté pour vous ?",
+    "Comment avez-vous géré les imprévus de la vie adulte ?"
+  ],
+  22: [
+    "Avez-vous voyagé seul(e) ou vécu une grande aventure ?",
+    "Quel voyage a changé votre perception du monde ?",
+    "Un lieu ou une culture qui vous a profondément marqué(e) ?",
+    "Quels défis ou bonheurs liés aux voyages avez-vous vécus ?",
+    "Comment ces expériences ont-elles changé votre rapport à vous-même ?"
+  ],
+  23: [
+    "Quel défi personnel vous a le plus marqué(e) ?",
+    "Comment l'avez-vous affronté ?",
+    "Quelles forces avez-vous découvertes en vous ?",
+    "Un moment de dépassement de soi qui vous a transformé(e) ?",
+    "Quels enseignements avez-vous tirés de vos défis personnels ?"
+  ],
+  24: [
+    "Quelles rencontres ont été décisives dans votre vie jeune adulte ?",
+    "Un mentor ou une amitié durable née à cette période ?",
+    "Un cercle social marquant que vous avez intégré ?",
+    "Comment avez-vous choisi vos entourages à ce moment-là ?",
+    "Qu'est-ce qui vous attirait ou vous rebutait dans les autres ?"
+  ],
+  25: [
+    "Comment avez-vous rencontré un ou une partenaire de vie important(e) ?",
+    "Quelles ont été les étapes clés de votre relation ?",
+    "Un souvenir de complicité profonde dans votre relation ?",
+    "Quels apprentissages personnels avez-vous fait en couple ?",
+    "Comment votre vision de l'amour a-t-elle évolué ?"
+  ],
+  26: [
+    "Comment avez-vous décidé de vous engager officiellement (mariage, PACS, etc.) ?",
+    "Quel souvenir gardez-vous de ce moment d'engagement ?",
+    "Comment votre quotidien a-t-il changé avec cet engagement ?",
+    "Quels défis ou joies avez-vous traversés à deux ?",
+    "Un conseil que vous aimeriez transmettre sur la vie à deux ?"
+  ],
+  27: [
+    "Comment avez-vous vécu l'arrivée d'un enfant (si c'est le cas) ?",
+    "Qu'avez-vous ressenti lors de la naissance ?",
+    "Comment votre quotidien s'est-il transformé ?",
+    "Qu'avez-vous découvert sur vous-même en devenant parent ?",
+    "Quel espoir ou valeur principale souhaitez-vous transmettre ?"
+  ],
+  28: [
+    "Si vous deviez faire un bilan de votre parcours jusqu’à aujourd'hui, que retiendriez-vous ?",
+    "Quelles sont vos plus grandes fiertés ?",
+    "Y a-t-il des choses que vous auriez voulu faire différemment ?",
+    "Quelles expériences ont construit la personne que vous êtes devenue ?",
+    "Quel message aimeriez-vous laisser sur cette période de votre vie ?"
+  ]
+};
+
+export const questions = Object.values(questionsParChapitre).flat();
+export const sequenceParQuestion = Object.entries(questionsParChapitre)
+  .flatMap(([chapitre, liste]) => Array(liste.length).fill(Number(chapitre)));
