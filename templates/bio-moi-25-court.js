@@ -102,10 +102,10 @@ export const questionsParChapitre = {
     "Si vous êtes parent ou marié(e), que souhaitez-vous transmettre ou bâtir ?"
   ],
 15: [
+    "Une relation amoureuse ou une amitié a-t-elle marqué cette période de votre vie ?",
+    "Avez-vous fondé une famille ou eu des enfants, et que retenez-vous de cette expérience ? Si non, y a avez-vous songé ?",
     "Si vous deviez dresser un bilan de votre parcours jusqu'à aujourd'hui, que retiendriez-vous ?",
-    "Quels moments ou réalisations vous rendent le plus fier(ère) ?",
-    "Une relation amoureuse ou un partenaire a-t-il/elle marqué cette période de votre vie ?",
-    "Avez-vous fondé une famille ou eu des enfants, et que retenez-vous de cette expérience ?"
+    "Quels moments ou réalisations vous rendent le plus fier(ère) ?"
 ]
 };
 
