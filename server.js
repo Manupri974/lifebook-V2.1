@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 
 console.log("👋 Démarrage de server.js...");
 
@@ -17,20 +16,22 @@ const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// ✅ Middleware CORS propre avec gestion OPTIONS
+// ✅ Middleware CORS avec log de debug
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
+  } else {
+
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(204).send();
+    console.log("➡️ Préflight OPTIONS reçu, réponse 200");
+    return res.sendStatus(200);
   }
 
   next();
@@ -38,7 +39,7 @@ app.use((req, res, next) => {
 
 // ✅ Routes principales
 app.post("/api/generer-livre", genererLivre);
-app.post("/api/exporter-pdf", exporterPdf);
+app.use("/api/exporter-pdf", exporterPdf);
 
 // ✅ Port dynamique
 const PORT = process.env.PORT || 3000;
