@@ -160,29 +160,27 @@
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Image%20encart%20interview.png" alt="Biographie">
           <div class="option-title">Biographie</div>
           <div class="option-desc">
-            <br>Créez votre biographie à votre façon :<br><br>
+            Créez votre biographie à votre façon :<br><br>
             • Racontez votre propre histoire<br>
             • Écrivez pour un proche<br>
             • Partagez l'écriture avec un proche
           </div>
         </div>
-
         <div class="option" data-value="love">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px).png" alt="Histoire d'amour">
           <div class="option-title">Histoire d'amour</div>
           <div class="option-desc">
-            <br>Créez un livre autour de votre amour :<br><br>
+            Créez un livre autour de votre amour :<br><br>
             • Chaque partenaire raconte<br>
             • Vous revivez votre rencontre<br>
             • Vous retracez votre vie commune
           </div>
         </div>
-
         <div class="option" data-value="hommage">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px)%20(1).png" alt="Souvenirs partagés">
           <div class="option-title">Souvenirs partagés</div>
           <div class="option-desc">
-            <br>Offrez un livre en cadeau :<br><br>
+            Offrez un livre en cadeau :<br><br>
             • Témoignez de votre histoire commune<br>
             • Célébrez sa vie<br>
             • Offrez un souvenir éternel
@@ -191,7 +189,6 @@
       </div>
     </div>
 
-    <!-- Parcours Biographie / Hommage -->
     <div class="question" id="q2" style="display:none">
       <h2>2. Qui est concerné ?</h2>
       <div class="options">
@@ -227,7 +224,6 @@
       </div>
     </div>
 
-    <!-- Parcours Histoire d'amour -->
     <div class="question" id="qLove2" style="display:none">
       <h2>2. Comment votre histoire doit-elle être racontée ?</h2>
       <div class="options">
@@ -244,6 +240,18 @@
       </div>
     </div>
 
+    <div class="question" id="qHommage2" style="display:none">
+      <h2>2. À qui souhaitez-vous offrir ce récit unique ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="mere">Ma mère</div>
+        <div class="option-small" data-value="pere">Mon père</div>
+        <div class="option-small" data-value="grandmere">Ma grand-mère</div>
+        <div class="option-small" data-value="grandpere">Mon grand-père</div>
+        <div class="option-small" data-value="ami">Un(e) ami(e)</div>
+        <div class="option-small" data-value="amour">Un amour</div>
+      </div>
+    </div>
+
     <button id="btnStart" disabled>Commencer l’interview</button>
   </div>
 
@@ -251,26 +259,28 @@
 const selections = {};
 const btnStart = document.getElementById('btnStart');
 
+// Gestion sélection produits
 document.querySelectorAll('#q1 .option').forEach(opt => {
   opt.addEventListener('click', () => {
     Object.keys(selections).forEach(key => delete selections[key]);
-    document.querySelectorAll('.question').forEach(q => {
-      if (q.id !== 'q1') q.style.display = 'none';
-    });
+    document.querySelectorAll('.question').forEach(q => { if (q.id !== 'q1') q.style.display = 'none'; });
     document.querySelectorAll('.option, .option-small').forEach(o => o.classList.remove('selected'));
     btnStart.disabled = true;
 
     opt.classList.add('selected');
     selections['produit'] = opt.dataset.value;
 
-    if (opt.dataset.value === 'bio' || opt.dataset.value === 'hommage') {
+    if (opt.dataset.value === 'bio') {
       document.getElementById('q2').style.display = 'block';
     } else if (opt.dataset.value === 'love') {
       document.getElementById('qLove2').style.display = 'block';
+    } else if (opt.dataset.value === 'hommage') {
+      document.getElementById('qHommage2').style.display = 'block';
     }
   });
 });
 
+// Fonction sélection questions
 function handleSelection(groupSelector, nextId, key) {
   document.querySelectorAll(groupSelector).forEach(opt => {
     opt.addEventListener('click', () => {
@@ -291,22 +301,27 @@ handleSelection('#q4 .option-small', 'q5', 'personne');
 handleSelection('#q5 .option-small', null, 'format');
 handleSelection('#qLove2 .option-small', 'qLove3', 'pointDeVueLove');
 handleSelection('#qLove3 .option-small', null, 'enfantsLove');
+handleSelection('#qHommage2 .option-small', null, 'destinataire');
 
+// Activation bouton
 function checkIfReady() {
-  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
   if ((produit === 'bio' && qui && age && personne && format) ||
-      (produit === 'hommage' && qui && age && personne && format) ||
-      (produit === 'love' && pointDeVueLove && enfantsLove)) {
+      (produit === 'love' && pointDeVueLove && enfantsLove) ||
+      (produit === 'hommage' && destinataire)) {
     btnStart.disabled = false;
   }
 }
 
+// Redirection
 btnStart.addEventListener('click', () => {
-  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
-  if (produit === 'bio' || produit === 'hommage') {
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
+  if (produit === 'bio') {
     window.location.href = `/chat.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
   } else if (produit === 'love') {
     window.location.href = `/love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
+  } else if (produit === 'hommage') {
+    window.location.href = `/hommage.html?type=${produit}&dest=${destinataire}`;
   }
 });
 </script>
