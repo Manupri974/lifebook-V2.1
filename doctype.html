@@ -155,39 +155,11 @@
     <div class="question" id="q1">
       <h2>1. Choisissez un produit</h2>
       <div class="options">
-        <div class="option" data-value="bio">
-          <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Image%20encart%20interview.png" alt="Biographie">
-          <div class="option-title">Biographie</div>
-          <div class="option-desc">
-            <br>Créez votre biographie à votre façon :<br><br>
-            • Racontez votre propre histoire OU<br>
-            • Écrivez pour un proche que vous connaissez par cœur OU<br>
-            • Moment partagé : Aidez un proche à écrire son histoire
-          </div>
-        </div>
-        <div class="option" data-value="love">
-          <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px).png" alt="Histoire d'amour">
-          <div class="option-title">Histoire d'amour</div>
-          <div class="option-desc">
-            <br>Créez un livre autour de votre amour :<br><br>
-            • Chaque partenaire raconte son histoire<br>
-            • Vous revivez votre rencontre<br>
-            • Vous retracez votre vie commune
-          </div>
-        </div>
-        <div class="option" data-value="hommage">
-          <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px)%20(1).png" alt="Souvenirs partagés">
-          <div class="option-title">Souvenirs partagés</div>
-          <div class="option-desc">
-            <br>Offrez un cadeau UNIQUE à un être cher :<br><br>
-            • Témoignez de votre histoire commune<br>
-            • Célébrez sa vie et son importance<br>
-            • Offrez un souvenir intemporel
-          </div>
-        </div>
+        <!-- Tes 3 cartes Biographie - Amour - Souvenirs partagés -->
       </div>
     </div>
 
+    <!-- Questions Biographie classiques -->
     <div class="question" id="q2" style="display:none">
       <h2>2. Qui est concerné ?</h2>
       <div class="options">
@@ -223,55 +195,94 @@
       </div>
     </div>
 
+    <!-- Nouveau : Questions Histoire d'amour -->
+    <div class="question" id="qLove2" style="display:none">
+      <h2>2. Comment votre histoire doit-elle être racontée ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="jeLove">Point de vue d'un partenaire</div>
+        <div class="option-small" data-value="exterieurLove">Point de vue extérieur</div>
+      </div>
+    </div>
+
+    <div class="question" id="qLove3" style="display:none">
+      <h2>3. Avez-vous des enfants ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="enfantsOui">Oui</div>
+        <div class="option-small" data-value="enfantsNon">Non</div>
+      </div>
+    </div>
+
     <button id="btnStart" disabled>Commencer l’interview</button>
   </div>
 
-  <script>
-    const selections = {};
-    const q1 = document.querySelectorAll('#q1 .option');
-    const q2 = document.querySelectorAll('#q2 .option-small');
-    const q3 = document.querySelectorAll('#q3 .option-small');
-    const q4 = document.querySelectorAll('#q4 .option-small');
-    const q5 = document.querySelectorAll('#q5 .option-small');
-    const btnStart = document.getElementById('btnStart');
+<script>
+const selections = {};
+const q1 = document.querySelectorAll('#q1 .option');
+const q2 = document.querySelectorAll('#q2 .option-small');
+const q3 = document.querySelectorAll('#q3 .option-small');
+const q4 = document.querySelectorAll('#q4 .option-small');
+const q5 = document.querySelectorAll('#q5 .option-small');
+const qLove2 = document.querySelectorAll('#qLove2 .option-small');
+const qLove3 = document.querySelectorAll('#qLove3 .option-small');
+const btnStart = document.getElementById('btnStart');
 
-    function handleSelection(group, nextId, key) {
-      group.forEach(opt => {
-        opt.addEventListener('click', () => {
-          group.forEach(o => o.classList.remove('selected'));
-          opt.classList.add('selected');
-          selections[key] = opt.dataset.value;
-          if (nextId) {
-            const next = document.getElementById(nextId);
-            next.style.display = 'block';
-            next.style.animation = 'fadeUp 0.4s ease forwards';
-          }
-          checkIfReady();
-        });
-      });
-    }
-
-    function checkIfReady() {
-      const { produit, qui, age, personne, format } = selections;
-      if (produit && qui && age && personne && format) {
-        btnStart.disabled = false;
+function handleSelection(group, nextId, key) {
+  group.forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selections[key] = opt.dataset.value;
+      if (nextId) {
+        const next = document.getElementById(nextId);
+        next.style.display = 'block';
+        next.style.animation = 'fadeUp 0.4s ease forwards';
       }
-    }
-
-    handleSelection(q1, 'q2', 'produit');
-    handleSelection(q2, 'q3', 'qui');
-    handleSelection(q3, 'q4', 'age');
-    handleSelection(q4, 'q5', 'personne');
-    handleSelection(q5, null, 'format');
-
-    btnStart.addEventListener('click', () => {
-      const { produit, qui, age, personne, format } = selections;
-      if (produit === 'bio' || produit === 'hommage') {
-        window.location.href = `/chat.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
-      } else {
-        alert("🔧 Le produit Histoire d’amour n’est pas encore disponible.");
-      }
+      checkIfReady();
     });
-  </script>
+  });
+}
+
+q1.forEach(opt => {
+  opt.addEventListener('click', () => {
+    q1.forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selections['produit'] = opt.dataset.value;
+
+    if (selections['produit'] === 'bio' || selections['produit'] === 'hommage') {
+      document.getElementById('q2').style.display = 'block';
+    } else if (selections['produit'] === 'love') {
+      document.getElementById('qLove2').style.display = 'block';
+    }
+  });
+});
+
+handleSelection(q2, 'q3', 'qui');
+handleSelection(q3, 'q4', 'age');
+handleSelection(q4, 'q5', 'personne');
+handleSelection(q5, null, 'format');
+handleSelection(qLove2, 'qLove3', 'pointDeVueLove');
+handleSelection(qLove3, null, 'enfantsLove');
+
+function checkIfReady() {
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
+  if ((produit === 'bio' && qui && age && personne && format) ||
+      (produit === 'hommage' && qui && age && personne && format) ||
+      (produit === 'love' && pointDeVueLove && enfantsLove)) {
+    btnStart.disabled = false;
+  }
+}
+
+btnStart.addEventListener('click', () => {
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
+  if (produit === 'bio' || produit === 'hommage') {
+    window.location.href = `/chat.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
+  } else if (produit === 'love') {
+    window.location.href = `/love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
+  } else {
+    alert("Produit non pris en charge !");
+  }
+});
+</script>
+
 </body>
 </html>
