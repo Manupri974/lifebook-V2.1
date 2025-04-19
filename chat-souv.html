@@ -373,18 +373,19 @@ console.log("✅ Couverture détectée, génération du livre possible.");
 
     console.log("✅ Segments reconstruits :", segments);
 
-    const payload = {
-      segments,
-      perso,
-      questions,
-      titreChapitres,
-      sequenceParQuestion
-    };
+const payload = {
+  segments,
+  questions,
+  titreChapitres,
+  sequenceParQuestion,
+  dest: params.get("dest"),
+  prenomC: params.get("prenomC"),
+};
 
     console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
 
     console.log("📤 Étape 2 : Envoi au backend...");
-    const response = await fetch(`${API_BASE}/api/generer-livre`, {
+    const response = await fetch(`${API_BASE}/api/generer-livre-hommage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -602,8 +603,8 @@ function toggleRecording() {
     
 let sequenceParQuestion = [];
     
-async function chargerTemplateSequence({ type, qui, age, format }) {
-  const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`;
+async function chargerTemplateSequence({ type, dest }) {
+const nomFichier = `./templates/hommage-${templateParams.dest}.js`;
   try {
     const module = await import(nomFichier);
     questions = module.questions || [];
@@ -671,13 +672,11 @@ async function initChat() {
     const params = new URLSearchParams(window.location.search);
     interviewId = params.get("id");
 
-    templateParams = {
-      type: params.get("type") || "bio",
-      qui: params.get("qui") || "moi",
-      age: params.get("age") || "18",
-      format: params.get("format") || "court",
-    };
-
+templateParams = {
+  type: params.get("type") || "hommage",
+  dest: params.get("dest") || "pere",    
+  prenomC: params.get("prenomC") || "Jean", 
+};
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
 
