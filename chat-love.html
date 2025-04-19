@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview LifeBook</title>
+
+  <!-- Librairies externes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Styles globaux -->
+ <style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: linear-gradient(to right, #f3e8ff, #fff0f5);
+    color: #333;
+  }
+
+  header {
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  header a {
+    text-decoration: none;
+    color: #a347ba;
+    font-weight: 600;
+    font-size: 1.4em;
+  }
+
+  #chat {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+  }
+
+  #messages {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    line-height: 1.4em;
+    max-width: 90%;
+    width: fit-content;
+    min-width: 60px;
+    word-wrap: break-word;
+  }
+
+  .message.bot {
+    background: #f3e8fa;
+    color: #5a2a82;
+    text-align: left;
+    align-self: flex-start;
+  }
+
+  .message.user {
+    background: #e1f5e8;
+    color: #21543d;
+    text-align: right;
+    align-self: flex-end;
+  }
+
+  #progression {
+    margin: 20px 0 10px;
+    font-size: 0.9em;
+    text-align: right;
+    color: #999;
+  }
+
+  .input-group {
+    position: relative;
+    margin-top: 10px;
+  }
+
+  #speechButton {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    background: #d3a6e4;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.3s ease;
+  }
+
+  #speechButton:hover {
+    background: #b674d3;
+  }
+
+  #speechButton.recording {
+    background: #a347ba;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .button-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .button-group button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #a347ba;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .button-group button i {
+    font-size: 1em;
+  }
+
+  .button-group button:hover {
+    background: #912ca3;
+  }
+
+  #waveform {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #a347ba 50%, #fff 50%);
+    background-size: 20px 100%;
+    background-repeat: repeat-x;
+    animation: wave 1s linear infinite;
+    display: none;
+    margin: 10px 0;
+    border-radius: 4px;
+  }
+
+  @keyframes wave {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 0; }
+  }
+
+  #messageStatus {
+    margin-top: 10px;
+    min-height: 20px;
+    font-size: 0.9em;
+  }
+
+  /* Markdown beautification */
+  .message.bot h1,
+  .message.bot h2 {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #6b1e8a;
+    margin: 18px 0 6px;
+    border-bottom: 2px solid #d9b3e4;
+    padding-bottom: 4px;
+  }
+
+  .message.bot h3 {
+    font-size: 1em;
+    font-weight: 600;
+    color: #8747a0;
+    margin: 10px 0 4px;
+  }
+
+  .message.bot p {
+    margin: 6px 0;
+    line-height: 1.6em;
+  }
+
+  .message.bot ul {
+    padding-left: 20px;
+    margin: 6px 0 12px;
+  }
+
+  .message.bot li {
+    margin-bottom: 6px;
+    line-height: 1.5em;
+  }
+
+  .message.bot strong {
+    font-weight: bold;
+    color: #4b145c;
+  }
+
+  textarea#userInput {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    resize: none;
+    line-height: 1.4em;
+    overflow: hidden;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .message.bot.chapitre {
+    background: #f6efff;
+    border-left: 4px solid #7e3af2;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-weight: 600;
+    font-size: 0.95em;
+    align-self: flex-start;
+    max-width: 90%;
+    width: fit-content;
+  }
+</style>
+</head>
+
+<body>
+  <header>
+    <a href="/index.html">LifeBook</a>
+  </header>
+
+  <div id="chat">
+    <div id="messages"></div>
+    <div id="progression">Question 1 / 89</div>
+    <div class="input-group">
+<textarea id="userInput" placeholder="Votre réponse..." rows="1"></textarea>
+      <button id="speechButton"><i class="fas fa-microphone"></i></button>
+    </div>
+    <div class="button-group">
+      <button id="sendBtn"><i class="fas fa-paper-plane"></i> Envoyer</button>
+      <button id="generateCoverBtn"><i class="fas fa-image"></i> Générer Couverture</button>
+      <button id="generateBtn"><i class="fas fa-book"></i> Générer livre</button>
+      <button id="saveButton"><i class="fas fa-save"></i> Sauvegarder</button>
+    </div>
+    <div id="waveform"></div>
+    <div id="messageStatus"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+    const supabase = createClient(
+      'https://qgmxclxahaqnvvxhgcms.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbXhjbHhhaGFxbnZ2eGhnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTYxODYsImV4cCI6MjA1OTM3MjE4Nn0.PhMpyFo9ZRgtLHdRyo6MXNjFNFy5WkH8LeqWnPJJCIE'
+    );
+
+let questions = [];
+let titreChapitres = {};
+let reponses = [];
+let templateParams = {};
+let interviewId = null;
+let historique = []; // ✅ historique des échanges
+let chapitreActuel = null; // ✅ pour suivre le chapitre courant
+let recognition;
+let recording = false;
+let sequenceCounts = {};         // ✅ Pour compter les messages par séquence
+let segments = {};               // ✅ Pour stocker les messages par séquence
+let questionIndex = 0;          // ← nombre de questions déjà posées
+
+
+    const status = document.getElementById("messageStatus");
+function miseAJourProgression() {
+  const total = questions.length || 0;
+  const current = questionIndex + 1;
+  document.getElementById("progression").innerText = `Question ${current} / ${total}`;
+}
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Enregistre la réponse
+  reponses[questionIndex] = text;
+  historique.push({ role: "user", content: text }); // 🔁 on enregistre dans historique aussi
+
+  // Affiche dans l'interface
+  afficher("Vous", text, "user");
+
+  // Passe à la question suivante
+  questionIndex++;
+
+  if (questionIndex >= questions.length) {
+    afficher("LifeBook", "✅ Vous avez terminé toutes les questions ! Vous pouvez maintenant générer le livre.", "bot");
+    input.disabled = true;
+    document.getElementById("sendBtn").disabled = true;
+    return;
+  }
+
+  // Affiche la prochaine question
+  afficherQuestion(questionIndex);
+  miseAJourProgression();
+
+  // Reset input
+  input.value = "";
+  input.style.height = "auto";
+}
+async function genererLivre() {
+  if (!reponses || reponses.length < 4) {
+    alert("⛔️ Pas assez de contenu pour générer un livre. Complétez plus de réponses.");
+    return;
+  }
+
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = true;
+  // Avant d'aller plus loin, vérifier que la couverture existe
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) {
+  alert('❌ Vous devez être connecté pour générer.');
+  btn.disabled = false;
+  btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  return;
+}
+
+const interviewId = new URLSearchParams(window.location.search).get("id");
+
+const { data: couvertureData, error } = await supabase
+  .from('covers')
+  .select('cover_base64')
+  .eq('id', interviewId)
+  .eq('user_id', session.user.id)
+  .single();
+
+if (error || !couvertureData || !couvertureData.cover_base64) {
+  alert('❌ Vous devez créer votre couverture avant de générer votre livre.');
+  btn.disabled = false;
+  btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  return;
+}
+
+console.log("✅ Couverture détectée, génération du livre possible.");
+  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Génération...`;
+
+  const API_BASE = "https://lifebook-v2-1.onrender.com";
+  const perso = new URLSearchParams(window.location.search).get("perso") || "il";
+
+  try {
+    console.log("🚀 Étape 1 : Construction des segments...");
+
+    const segments = {};
+    for (let i = 0; i < reponses.length; i++) {
+      const seq = sequenceParQuestion?.[i]?.toString() || "1";
+      if (!segments[seq]) segments[seq] = [];
+      if (reponses[i]?.trim()) segments[seq].push(reponses[i].trim());
+    }
+
+    console.log("✅ Segments reconstruits :", segments);
+
+    const payload = {
+      segments,
+      perso,
+      questions,
+      titreChapitres,
+      sequenceParQuestion
+    };
+
+    console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
+
+    console.log("📤 Étape 2 : Envoi au backend...");
+    const response = await fetch(`${API_BASE}/api/generer-livre`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      alert(`❌ Erreur du serveur (${response.status})`);
+      return;
+    }
+
+    const rawText = await response.text();
+    console.log("📦 Réponse brute reçue :", rawText.slice(0, 300));
+
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (err) {
+      console.error("❌ Erreur de parsing JSON :", err);
+      alert("⚠️ La réponse du serveur n’a pas pu être interprétée. Regarde la console.");
+      return;
+    }
+
+    if (!data || !data.texte || data.texte.trim().length < 100) {
+      alert("❌ Le texte généré est trop court. Vérifie les réponses.");
+      return;
+    }
+
+    const texteFinal = data.texte.trim();
+
+    console.log("🖨️ Étape 3 : Récupération de la couverture depuis Supabase...");
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      alert('❌ Vous devez être connecté pour récupérer la couverture.');
+      return;
+    }
+
+    const interviewId = new URLSearchParams(window.location.search).get("id");
+
+    const { data: couvertureData, error } = await supabase
+      .from('covers')
+      .select('cover_base64')
+      .eq('id', interviewId)
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (error || !couvertureData || !couvertureData.cover_base64) {
+      alert("❌ Erreur en récupérant la couverture depuis Supabase.");
+      console.error(error);
+      return;
+    }
+
+    console.log("✅ Couverture récupérée depuis Supabase.");
+
+    console.log("🖨️ Étape 4 : Génération du PDF stylisé avec couverture via backend...");
+
+    const pdfResponse = await fetch(`${API_BASE}/api/exporter-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        texte: texteFinal,
+        couvertureBase64: couvertureData.cover_base64
+      })
+    });
+
+    if (!pdfResponse.ok) {
+      console.error("❌ PDF non généré :", pdfResponse.status);
+      alert("❌ Le serveur n’a pas réussi à générer le PDF.");
+      return;
+    }
+
+    const blob = await pdfResponse.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "LifeBook.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    alert("📘 Livre généré avec succès !");
+  } catch (error) {
+    console.error("❌ Erreur lors de la génération :", error);
+    alert("❌ Une erreur est survenue pendant la génération. Voir la console.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fas fa-book"></i> Générer`;
+  }
+}
+    async function sauvegarder() {
+  status.textContent = "⏳ Sauvegarde en cours...";
+  status.style.color = "black";
+
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (!session || error) {
+    status.textContent = "❌ Non connecté.";
+    status.style.color = "red";
+    return;
+  }
+
+  const user = session.user;
+  let result;
+
+  if (interviewId) {
+    result = await supabase
+      .from("responses")
+      .update({ content: historique })
+      .eq("id", interviewId);
+  } else {
+// 🔁 Récupère tous les paramètres de l’URL (sauf id)
+const urlParams = new URLSearchParams(window.location.search);
+const allParams = {};
+for (const [key, value] of urlParams.entries()) {
+  if (key !== "id") allParams[key] = value;
+}
+
+result = await supabase
+  .from("responses")
+  .insert([{
+    user_id: user.id,
+    content: historique,
+    params: allParams // ✅ nouveau champ
+  }])
+  .select("id")
+  .single();
+
+if (result.data?.id) {
+  interviewId = result.data.id;
+
+  const currentParams = new URLSearchParams(window.location.search);
+  currentParams.set("id", interviewId);
+
+  const newUrl = `${window.location.pathname}?${currentParams.toString()}`;
+  history.replaceState(null, "", newUrl);
+}
+  }
+
+  if (result.error) {
+    status.textContent = "❌ Erreur : " + result.error.message;
+    status.style.color = "red";
+  } else {
+    status.textContent = "✅ Interview sauvegardée avec succès !";
+    status.style.color = "green";
+  }
+
+  setTimeout(() => status.textContent = "", 3000);
+}
+let isRecording = false;
+let finalText = "";
+
+function toggleRecording() {
+  const button = document.getElementById("speechButton");
+  const inputField = document.getElementById("userInput");
+  const waveform = document.getElementById("waveform");
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Reconnaissance vocale non supportée sur ce navigateur.");
+    return;
+  }
+
+  if (!recognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript;
+        }
+      }
+
+      finalText += transcript;
+      inputField.value = finalText.trim();
+      inputField.dispatchEvent(new Event("input")); // pour réajuster la hauteur
+    };
+
+    recognition.onerror = (event) => {
+      console.error("❌ Erreur vocale :", event.error);
+      stopRecording();
+    };
+
+    recognition.onend = () => {
+      if (isRecording) {
+        console.log("🔁 Reco terminée, tentative de reprise...");
+        recognition.start();
+      } else {
+        stopRecording();
+      }
+    };
+  }
+
+  function stopRecording() {
+    isRecording = false;
+    button.classList.remove("recording");
+    waveform.style.display = "none";
+  }
+
+  if (!isRecording) {
+    finalText = "";
+    inputField.value = "";
+    recognition.start();
+    isRecording = true;
+    button.classList.add("recording");
+    waveform.style.display = "block";
+  } else {
+    recognition.stop();
+    stopRecording();
+  }
+}
+    
+let sequenceParQuestion = [];
+    
+async function chargerTemplateSequence({ type, qui, age, format }) {
+  const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`;
+  try {
+    const module = await import(nomFichier);
+    questions = module.questions || [];
+    sequenceParQuestion = module.sequenceParQuestion || [];
+    titreChapitres = module.titreChapitres || {}; // ✅ on récupère aussi les titres
+    console.log("✅ Séquences chargées :", sequenceParQuestion);
+    console.log("✅ Titres de chapitres :", titreChapitres);
+  } catch (err) {
+    console.error("❌ Impossible de charger le template :", nomFichier, err);
+    sequenceParQuestion = [];
+    titreChapitres = {};
+  }
+}
+
+function afficher(auteur, texte, classe) {
+  if (!texte) {
+    console.warn("❌ Aucun texte à afficher pour :", auteur);
+    return;
+  }
+
+  // ✅ Assainissement du contenu pour éviter l’erreur marked()
+  let contenu;
+  if (typeof texte === "string") {
+    contenu = texte;
+  } else if (typeof texte?.content === "string") {
+    contenu = texte.content;
+  } else {
+    contenu = JSON.stringify(texte, null, 2);
+  }
+
+  const msg = document.createElement("div");
+  msg.className = "message " + classe;
+  msg.innerHTML = `<strong>${auteur} :</strong><br>${marked.parse(contenu)}`;
+
+  const container = document.getElementById("messages");
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+}
+
+function afficherQuestion(index) {
+  const question = questions[index];
+  if (!question) {
+    console.warn("❌ Aucune question à afficher à l’index", index);
+    return;
+  }
+
+  const chapId = sequenceParQuestion[index] || 1;
+
+  if (chapId !== chapitreActuel && titreChapitres[chapId]) {
+    chapitreActuel = chapId;
+    afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+  }
+
+  historique.push({ role: "assistant", content: question }); // 🔁 on enregistre la question aussi
+  afficher("LifeBook", question, "bot");
+
+  input.value = reponses[index] || "";
+  input.focus();
+  document.getElementById("progression").innerText = `Question ${index + 1} / ${questions.length}`;
+}
+async function initChat() {
+  console.log("🚀 initChat lancé");
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    interviewId = params.get("id");
+
+    templateParams = {
+      type: params.get("type") || "bio",
+      qui: params.get("qui") || "moi",
+      age: params.get("age") || "18",
+      format: params.get("format") || "court",
+    };
+
+    await chargerTemplateSequence(templateParams);
+    console.log("✅ Template chargé :", templateParams);
+
+    if (interviewId) {
+      const { data, error } = await supabase
+        .from("responses")
+        .select("content, params")
+        .eq("id", interviewId)
+        .single();
+
+      if (error || !data?.content || !Array.isArray(data.content)) {
+        afficher("LifeBook", "❌ Impossible de charger l’interview existante.", "bot");
+        console.error("⚠️ Erreur Supabase :", error);
+        return;
+      }
+
+      historique = data.content;
+      reponses = [];
+      questionIndex = 0;
+
+      let chapitreCourant = null;
+
+      for (const msg of historique) {
+        const contenu = msg.content;
+        if (msg.role === "assistant") {
+          afficher("LifeBook", contenu, "bot");
+        } else if (msg.role === "user") {
+          afficher("Vous", contenu, "user");
+          reponses[questionIndex] = contenu;
+          const chapId = sequenceParQuestion[questionIndex] || 1;
+          if (!segments[chapId]) segments[chapId] = [];
+          segments[chapId].push(contenu);
+          sequenceCounts[chapId] = (sequenceCounts[chapId] || 0) + 1;
+          questionIndex++;
+        }
+      }
+
+      if (questionIndex < questions.length) {
+        const chapId = sequenceParQuestion[questionIndex] || 1;
+        if (chapId !== chapitreCourant && titreChapitres[chapId]) {
+          chapitreCourant = chapId;
+          afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+        }
+        afficherQuestion(questionIndex);
+        miseAJourProgression();
+      } else {
+        afficher("LifeBook", "✅ Vous avez terminé toutes les questions ! Vous pouvez maintenant générer le livre.", "bot");
+        document.getElementById("userInput").disabled = true;
+        document.getElementById("sendBtn").disabled = true;
+      }
+
+    } else {
+      reponses = Array(questions.length).fill("");
+      questionIndex = 0;
+
+      const chapId = sequenceParQuestion[0] || 1;
+      if (titreChapitres[chapId]) {
+        chapitreActuel = chapId;
+        afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
+      }
+
+      afficherQuestion(0);
+      miseAJourProgression();
+    }
+
+  } catch (err) {
+    console.error("❌ Erreur globale dans initChat :", err);
+    afficher("LifeBook", "⚠️ Une erreur s’est produite au lancement du chat.", "bot");
+  }
+}
+    
+// ✅ Listeners bouton et clavier
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("generateBtn").addEventListener("click", genererLivre);
+document.getElementById("saveButton").addEventListener("click", sauvegarder);
+document.getElementById("speechButton").addEventListener("click", toggleRecording);
+
+document.getElementById("generateCoverBtn").addEventListener("click", () => {
+  const params = new URLSearchParams(window.location.search);
+  const interviewId = params.get('id');
+
+  if (!interviewId) {
+    alert("⛔️ Veuillez d'abord sauvegarder l'interview avant de générer la couverture.");
+    return;
+  }
+
+  window.location.href = `cover.html?id=${interviewId}`;
+});
+document.getElementById("userInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
+
+// ✅ Lancement du chat à la fin
+window.onload = initChat;
+
+// ✅ Auto-resize input (si présent au moment du chargement)
+const input = document.getElementById("userInput");
+if (input) {
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+  });
+
+  window.addEventListener("load", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+  });
+}
+  </script>
+
+</div> <!-- FIN DE #chat -->
+</body>
+</html>
