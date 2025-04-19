@@ -82,21 +82,33 @@
       font-weight: 600;
       color: #6a1acb;
     }
- .option-desc {
-  font-weight: 400;
-  font-size: 0.9em;
-  color: #666;
-  padding: 0 10px 12px;
-  line-height: 1.8; /* <-- plus d'air entre chaque phrase */
-  text-align: left; /* <-- aligné à gauche */
-}
+    .option-desc {
+      font-weight: 400;
+      font-size: 0.9em;
+      color: #666;
+      padding: 0 10px 12px;
+      line-height: 1.8;
+      text-align: left;
     }
-    .option:hover {
+    .option-small {
+      flex: 1 1 auto;
+      background: white;
+      padding: 16px 22px;
+      border-radius: 50px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      font-size: 1em;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .option:hover, .option-small:hover {
       border-color: #8b5cf6;
       transform: scale(1.03);
       box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     }
-    .option.selected {
+    .option.selected, .option-small.selected {
       background: #ede9fe;
       border-color: #7c3aed;
       box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
@@ -146,28 +158,32 @@
         <div class="option" data-value="bio">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Image%20encart%20interview.png" alt="Biographie">
           <div class="option-title">Biographie</div>
-   <div class="option-desc">
-  <br>Créez votre biographie à votre façon :<br><br>
-  • Racontez votre propre histoire OU<br>
-  • Écrivez pour un proche que vous connaissez par cœur OU<br>
-  • Moment partagé : Aidez un proche à écrrire son histoire
-</div>
+          <div class="option-desc">
+            <br>Créez votre biographie à votre façon :<br><br>
+            • Racontez votre propre histoire OU<br>
+            • Écrivez pour un proche que vous connaissez par cœur OU<br>
+            • Moment partagé : Aidez un proche à écrire son histoire
+          </div>
         </div>
         <div class="option" data-value="love">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px).png" alt="Histoire d'amour">
           <div class="option-title">Histoire d'amour</div>
-          <div class="option-desc"><br>Créez un livre autour de votre amour :<br><br> 
-• Chaque partenaire raconte son histoire<br>
-• Vous revivez votre rencontre<br>
-• Vous retracez votre vie commune</div>
+          <div class="option-desc">
+            <br>Créez un livre autour de votre amour :<br><br>
+            • Chaque partenaire raconte son histoire<br>
+            • Vous revivez votre rencontre<br>
+            • Vous retracez votre vie commune
+          </div>
         </div>
         <div class="option" data-value="hommage">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px)%20(1).png" alt="Souvenirs partagés">
           <div class="option-title">Souvenirs partagés</div>
-          <div class="option-desc"><br>Offrez un cadeau UNIQUE à un être cher :<br><br> 
-• Témoignez de votre histoire commune<br>
-• Célébrez sa vie et son importance<br>
-• Offrez un souvenir intemporel</div>
+          <div class="option-desc">
+            <br>Offrez un cadeau UNIQUE à un être cher :<br><br>
+            • Témoignez de votre histoire commune<br>
+            • Célébrez sa vie et son importance<br>
+            • Offrez un souvenir intemporel
+          </div>
         </div>
       </div>
     </div>
@@ -175,35 +191,35 @@
     <div class="question" id="q2" style="display:none">
       <h2>2. Qui est concerné ?</h2>
       <div class="options">
-        <div class="option" data-value="moi">Moi-même</div>
-        <div class="option" data-value="autre">Une autre personne</div>
+        <div class="option-small" data-value="moi">Moi-même</div>
+        <div class="option-small" data-value="autre">Une autre personne</div>
       </div>
     </div>
 
     <div class="question" id="q3" style="display:none">
       <h2>3. Quel âge a la personne principale ?</h2>
       <div class="options">
-        <div class="option" data-value="18">18–25 ans</div>
-        <div class="option" data-value="25">25–35 ans</div>
-        <div class="option" data-value="35">35–45 ans</div>
-        <div class="option" data-value="45">45–55 ans</div>
-        <div class="option" data-value="55">55 ans et plus</div>
+        <div class="option-small" data-value="18">18–25 ans</div>
+        <div class="option-small" data-value="25">25–35 ans</div>
+        <div class="option-small" data-value="35">35–45 ans</div>
+        <div class="option-small" data-value="45">45–55 ans</div>
+        <div class="option-small" data-value="55">55 ans et plus</div>
       </div>
     </div>
 
     <div class="question" id="q4" style="display:none">
       <h2>4. À quelle personne doit être rédigé le livre ?</h2>
       <div class="options">
-        <div class="option" data-value="je">Première personne ("Je suis né...")</div>
-        <div class="option" data-value="il">Troisième personne ("Elle est née...")</div>
+        <div class="option-small" data-value="je">Première personne ("Je suis né...")</div>
+        <div class="option-small" data-value="il">Troisième personne ("Elle est née...")</div>
       </div>
     </div>
 
     <div class="question" id="q5" style="display:none">
       <h2>5. Quel format de livre souhaitez-vous ?</h2>
       <div class="options">
-        <div class="option" data-value="long">📖 Biographie détaillée (100–120 pages)</div>
-        <div class="option" data-value="court">📝 Petit livre narratif (40–60 pages)</div>
+        <div class="option-small" data-value="long">📖 Biographie détaillée (100–120 pages)</div>
+        <div class="option-small" data-value="court">📝 Petit livre narratif (40–60 pages)</div>
       </div>
     </div>
 
@@ -213,10 +229,10 @@
   <script>
     const selections = {};
     const q1 = document.querySelectorAll('#q1 .option');
-    const q2 = document.querySelectorAll('#q2 .option');
-    const q3 = document.querySelectorAll('#q3 .option');
-    const q4 = document.querySelectorAll('#q4 .option');
-    const q5 = document.querySelectorAll('#q5 .option');
+    const q2 = document.querySelectorAll('#q2 .option-small');
+    const q3 = document.querySelectorAll('#q3 .option-small');
+    const q4 = document.querySelectorAll('#q4 .option-small');
+    const q5 = document.querySelectorAll('#q5 .option-small');
     const btnStart = document.getElementById('btnStart');
 
     function handleSelection(group, nextId, key) {
