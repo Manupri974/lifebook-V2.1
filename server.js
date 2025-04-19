@@ -3,6 +3,7 @@ import express from "express";
 console.log("👋 Démarrage de server.js...");
 
 import genererLivre from "./api/generer-livre.js";
+import genererLivreLove from "./api/generer-livre-love.js"; // 👈 AJOUT ICI
 import exporterPdf from "./api/exporter-pdf.js";
 
 // ✅ Liste des domaines autorisés
@@ -12,18 +13,14 @@ const allowedOrigins = [
 
 const app = express();
 
-// ✅ Middlewares pour parser le corps des requêtes
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// ✅ Middleware CORS avec log de debug
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -39,9 +36,9 @@ app.use((req, res, next) => {
 
 // ✅ Routes principales
 app.post("/api/generer-livre", genererLivre);
+app.post("/api/generer-livre-love", genererLivreLove); // 👈 AJOUT ICI
 app.use("/api/exporter-pdf", exporterPdf);
 
-// ✅ Port dynamique
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Serveur démarré sur le port ${PORT}`);
