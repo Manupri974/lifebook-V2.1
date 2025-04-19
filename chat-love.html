@@ -603,7 +603,7 @@ function toggleRecording() {
 let sequenceParQuestion = [];
     
 async function chargerTemplateSequence({ type, vue, enfants, prenomA = "", prenomB = "" }) {
-  let fichierTemplate = `./templates/${type}-${vue}-${enfants}.js`;
+let fichierTemplate = `./templates/${type}-${vue}-${enfants}.js`;
 
   try {
     const module = await import(fichierTemplate);
@@ -685,13 +685,13 @@ async function initChat() {
     const params = new URLSearchParams(window.location.search);
     interviewId = params.get("id");
 
-    templateParams = {
-      type: params.get("type") || "love",   // Toujours love
-      vue: params.get("vue") || "",
-      enfants: params.get("enfants") || "",
-      prenomA: params.get("prenomA") || "",
-      prenomB: params.get("prenomB") || ""
-    };
+  templateParams = {
+  type: params.get("type") || "love",
+  vue: (params.get("vue") || "").toLowerCase(),       // tout minuscule
+  enfants: (params.get("enfants") || "").toLowerCase(), // tout minuscule
+  prenomA: params.get("prenomA") || "",
+  prenomB: params.get("prenomB") || ""
+};
 
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
