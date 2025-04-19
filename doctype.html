@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,29 +42,36 @@
       flex: 1;
       min-width: 45%;
       background: #f2e6ff;
-      padding: 12px 20px;
-      border-radius: 12px;
+      padding: 14px 22px;
+      border-radius: 16px;
       text-align: center;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      font-size: 1em;
     }
     .option:hover,
     .option.selected {
       border-color: #7e3af2;
       background: #e6d4ff;
+      transform: scale(1.03);
     }
     button {
       width: 100%;
-      padding: 14px;
-      background: #7e3af2;
+      padding: 16px;
+      background: linear-gradient(90deg, #7e3af2, #c084fc);
       color: white;
-      font-weight: bold;
-      font-size: 1em;
+      font-weight: 600;
+      font-size: 1.1em;
       border: none;
-      border-radius: 12px;
+      border-radius: 16px;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 30px;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: linear-gradient(90deg, #6b21a8, #9333ea);
     }
     button:disabled {
       background: #ccc;
@@ -71,6 +79,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Quel type de livre souhaitez-vous créer ?</h1>
@@ -166,4 +175,5 @@
     });
   </script>
 </body>
+
 </html>
