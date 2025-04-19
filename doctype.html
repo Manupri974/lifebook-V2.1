@@ -149,13 +149,13 @@
 </head>
 
 <body>
+
   <div class="container">
     <h1>Quel type de livre souhaitez-vous créer ?</h1>
 
     <div class="question" id="q1">
       <h2>1. Choisissez un produit</h2>
       <div class="options">
-        <!-- 3 cartes choix produit -->
         <div class="option" data-value="bio">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Image%20encart%20interview.png" alt="Biographie">
           <div class="option-title">Biographie</div>
@@ -191,13 +191,58 @@
       </div>
     </div>
 
-    <!-- Les autres questions cachées au début -->
-    <div class="question" id="q2" style="display:none"></div>
-    <div class="question" id="q3" style="display:none"></div>
-    <div class="question" id="q4" style="display:none"></div>
-    <div class="question" id="q5" style="display:none"></div>
-    <div class="question" id="qLove2" style="display:none"></div>
-    <div class="question" id="qLove3" style="display:none"></div>
+    <!-- Parcours Biographie / Hommage -->
+    <div class="question" id="q2" style="display:none">
+      <h2>2. Qui est concerné ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="moi">Moi-même</div>
+        <div class="option-small" data-value="autre">Une autre personne</div>
+      </div>
+    </div>
+
+    <div class="question" id="q3" style="display:none">
+      <h2>3. Quel âge a la personne principale ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="18">18–25 ans</div>
+        <div class="option-small" data-value="25">25–35 ans</div>
+        <div class="option-small" data-value="35">35–45 ans</div>
+        <div class="option-small" data-value="45">45–55 ans</div>
+        <div class="option-small" data-value="55">55 ans et plus</div>
+      </div>
+    </div>
+
+    <div class="question" id="q4" style="display:none">
+      <h2>4. À quelle personne doit être rédigé le livre ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="je">Première personne ("Je suis né...")</div>
+        <div class="option-small" data-value="il">Troisième personne ("Elle est née...")</div>
+      </div>
+    </div>
+
+    <div class="question" id="q5" style="display:none">
+      <h2>5. Quel format de livre souhaitez-vous ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="long">📖 Biographie détaillée (100–120 pages)</div>
+        <div class="option-small" data-value="court">📝 Petit livre narratif (40–60 pages)</div>
+      </div>
+    </div>
+
+    <!-- Parcours Histoire d'amour -->
+    <div class="question" id="qLove2" style="display:none">
+      <h2>2. Comment votre histoire doit-elle être racontée ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="jeLove">Point de vue d'un partenaire</div>
+        <div class="option-small" data-value="exterieurLove">Point de vue extérieur</div>
+      </div>
+    </div>
+
+    <div class="question" id="qLove3" style="display:none">
+      <h2>3. Avez-vous des enfants ?</h2>
+      <div class="options">
+        <div class="option-small" data-value="enfantsOui">Oui</div>
+        <div class="option-small" data-value="enfantsNon">Non</div>
+      </div>
+    </div>
 
     <button id="btnStart" disabled>Commencer l’interview</button>
   </div>
@@ -206,10 +251,8 @@
 const selections = {};
 const btnStart = document.getElementById('btnStart');
 
-// Quand on clique sur un produit
 document.querySelectorAll('#q1 .option').forEach(opt => {
   opt.addEventListener('click', () => {
-    // Réinitialise tout
     Object.keys(selections).forEach(key => delete selections[key]);
     document.querySelectorAll('.question').forEach(q => {
       if (q.id !== 'q1') q.style.display = 'none';
@@ -217,8 +260,6 @@ document.querySelectorAll('#q1 .option').forEach(opt => {
     document.querySelectorAll('.option, .option-small').forEach(o => o.classList.remove('selected'));
     btnStart.disabled = true;
 
-    // Nouveau produit choisi
-    document.querySelectorAll('#q1 .option').forEach(o => o.classList.remove('selected'));
     opt.classList.add('selected');
     selections['produit'] = opt.dataset.value;
 
@@ -230,7 +271,6 @@ document.querySelectorAll('#q1 .option').forEach(opt => {
   });
 });
 
-// Fonction pour toutes les réponses après q1
 function handleSelection(groupSelector, nextId, key) {
   document.querySelectorAll(groupSelector).forEach(opt => {
     opt.addEventListener('click', () => {
@@ -245,7 +285,13 @@ function handleSelection(groupSelector, nextId, key) {
   });
 }
 
-// Activation bouton
+handleSelection('#q2 .option-small', 'q3', 'qui');
+handleSelection('#q3 .option-small', 'q4', 'age');
+handleSelection('#q4 .option-small', 'q5', 'personne');
+handleSelection('#q5 .option-small', null, 'format');
+handleSelection('#qLove2 .option-small', 'qLove3', 'pointDeVueLove');
+handleSelection('#qLove3 .option-small', null, 'enfantsLove');
+
 function checkIfReady() {
   const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
   if ((produit === 'bio' && qui && age && personne && format) ||
@@ -255,7 +301,6 @@ function checkIfReady() {
   }
 }
 
-// Routes
 btnStart.addEventListener('click', () => {
   const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove } = selections;
   if (produit === 'bio' || produit === 'hommage') {
@@ -264,7 +309,6 @@ btnStart.addEventListener('click', () => {
     window.location.href = `/love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
   }
 });
-
 </script>
 
 </body>
