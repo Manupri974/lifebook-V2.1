@@ -145,50 +145,43 @@
       from { opacity: 0; transform: scale(0.98); }
       to { opacity: 1; transform: scale(1); }
     }
+    input {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1em;
+    }
   </style>
 </head>
 
 <body>
-
   <div class="container">
     <h1>Quel type de livre souhaitez-vous créer ?</h1>
 
+    <!-- Choix du produit -->
     <div class="question" id="q1">
       <h2>1. Choisissez un produit</h2>
       <div class="options">
         <div class="option" data-value="bio">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Image%20encart%20interview.png" alt="Biographie">
           <div class="option-title">Biographie</div>
-          <div class="option-desc">
-            Créez votre biographie à votre façon :<br><br>
-            • Racontez votre propre histoire<br>
-            • Écrivez pour un proche<br>
-            • Partagez l'écriture avec un proche
-          </div>
+          <div class="option-desc">Créez votre biographie :<br>• Votre histoire<br>• Pour un proche<br>• À deux voix</div>
         </div>
         <div class="option" data-value="love">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px).png" alt="Histoire d'amour">
           <div class="option-title">Histoire d'amour</div>
-          <div class="option-desc">
-            Créez un livre autour de votre amour :<br><br>
-            • Chaque partenaire raconte<br>
-            • Vous revivez votre rencontre<br>
-            • Vous retracez votre vie commune
-          </div>
+          <div class="option-desc">Votre histoire d’amour :<br>• Récits croisés<br>• Rencontre<br>• Vie commune</div>
         </div>
         <div class="option" data-value="hommage">
           <img src="https://raw.githubusercontent.com/Manupri974/lifebook-V2.1/refs/heads/main/assets/Sans%20titre%20(800%20x%20480%20px)%20(1).png" alt="Souvenirs partagés">
           <div class="option-title">Souvenirs partagés</div>
-          <div class="option-desc">
-            Offrez un livre en cadeau :<br><br>
-            • Témoignez de votre histoire commune<br>
-            • Célébrez sa vie<br>
-            • Offrez un souvenir éternel
-          </div>
+          <div class="option-desc">Un hommage :<br>• Souvenirs communs<br>• Déclaration<br>• Cadeau unique</div>
         </div>
       </div>
     </div>
 
+    <!-- Questions Biographie -->
     <div class="question" id="q2" style="display:none">
       <h2>2. Qui est concerné ?</h2>
       <div class="options">
@@ -224,11 +217,12 @@
       </div>
     </div>
 
+    <!-- Questions Histoire d'amour -->
     <div class="question" id="qLove2" style="display:none">
       <h2>2. Comment votre histoire doit-elle être racontée ?</h2>
       <div class="options">
-        <div class="option-small" data-value="jeLove">Point de vue d'un partenaire ("J'ai recontré Paul en 2012..."</div>
-        <div class="option-small" data-value="exterieurLove">Point de vue extérieur ("Julie et Marc se sont mariés en 2021...")</div>
+        <div class="option-small" data-value="jeLove">Point de vue d'un partenaire</div>
+        <div class="option-small" data-value="exterieurLove">Point de vue extérieur</div>
       </div>
     </div>
 
@@ -240,8 +234,17 @@
       </div>
     </div>
 
+    <div class="question" id="qLovePrenoms" style="display:none">
+      <h2>4. Quels sont les prénoms des partenaires ?</h2>
+      <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+        <input type="text" id="prenomA" placeholder="Prénom du Partenaire 1">
+        <input type="text" id="prenomB" placeholder="Prénom du Partenaire 2">
+      </div>
+    </div>
+
+    <!-- Questions Souvenirs partagés -->
     <div class="question" id="qHommage2" style="display:none">
-      <h2>2. À qui souhaitez-vous offrir ce récit unique ?</h2>
+      <h2>2. À qui souhaitez-vous offrir ce récit ?</h2>
       <div class="options">
         <div class="option-small" data-value="mere">Ma mère</div>
         <div class="option-small" data-value="pere">Mon père</div>
@@ -252,6 +255,13 @@
       </div>
     </div>
 
+    <div class="question" id="qHommagePrenom" style="display:none">
+      <h2>3. Prénom de la personne concernée :</h2>
+      <div style="display:flex; flex-direction:column; margin-top:20px;">
+        <input type="text" id="prenomC" placeholder="Prénom de la personne">
+      </div>
+    </div>
+
     <button id="btnStart" disabled>Commencer l’interview</button>
   </div>
 
@@ -259,16 +269,14 @@
 const selections = {};
 const btnStart = document.getElementById('btnStart');
 
-// Gestion sélection produits
+// Gestion sélection PRODUIT
 document.querySelectorAll('#q1 .option').forEach(opt => {
   opt.addEventListener('click', () => {
-    // RESET
     Object.keys(selections).forEach(key => delete selections[key]);
     document.querySelectorAll('.question').forEach(q => { if (q.id !== 'q1') q.style.display = 'none'; });
     document.querySelectorAll('.option, .option-small').forEach(o => o.classList.remove('selected'));
     btnStart.disabled = true;
 
-    // Choix produit
     opt.classList.add('selected');
     selections['produit'] = opt.dataset.value;
 
@@ -282,7 +290,7 @@ document.querySelectorAll('#q1 .option').forEach(opt => {
   });
 });
 
-// Fonction gestion réponses
+// Fonction pour gérer chaque sélection
 function handleSelection(groupSelector, nextId, key) {
   document.querySelectorAll(groupSelector).forEach(opt => {
     opt.addEventListener('click', () => {
@@ -297,37 +305,67 @@ function handleSelection(groupSelector, nextId, key) {
   });
 }
 
-// Lier questions aux fonctions
+// Attacher les questions aux réponses
 handleSelection('#q2 .option-small', 'q3', 'qui');
 handleSelection('#q3 .option-small', 'q4', 'age');
 handleSelection('#q4 .option-small', 'q5', 'personne');
 handleSelection('#q5 .option-small', null, 'format');
 handleSelection('#qLove2 .option-small', 'qLove3', 'pointDeVueLove');
-handleSelection('#qLove3 .option-small', null, 'enfantsLove');
-handleSelection('#qHommage2 .option-small', null, 'destinataire');
+handleSelection('#qLove3 .option-small', 'qLovePrenoms', 'enfantsLove');
+handleSelection('#qHommage2 .option-small', 'qHommagePrenom', 'destinataire');
 
-// Activation bouton si tout est rempli
+// Gérer saisie texte prénoms Love
+function setupLovePrenoms() {
+  const inputA = document.getElementById('prenomA');
+  const inputB = document.getElementById('prenomB');
+
+  [inputA, inputB].forEach(input => {
+    input.addEventListener('input', () => {
+      selections['prenomA'] = inputA.value.trim();
+      selections['prenomB'] = inputB.value.trim();
+      checkIfReady();
+    });
+  });
+}
+
+// Gérer saisie texte prénom Hommage
+function setupHommagePrenom() {
+  const inputC = document.getElementById('prenomC');
+
+  inputC.addEventListener('input', () => {
+    selections['prenomC'] = inputC.value.trim();
+    checkIfReady();
+  });
+}
+
+// Vérifier si on peut activer "Commencer"
 function checkIfReady() {
-  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, prenomA, prenomB, destinataire, prenomC } = selections;
+  
   if ((produit === 'bio' && qui && age && personne && format) ||
-      (produit === 'love' && pointDeVueLove && enfantsLove) ||
-      (produit === 'hommage' && destinataire)) {
+      (produit === 'love' && pointDeVueLove && enfantsLove && prenomA && prenomB) ||
+      (produit === 'hommage' && destinataire && prenomC)) {
     btnStart.disabled = false;
+  } else {
+    btnStart.disabled = true;
   }
 }
 
-// Clic bouton Commencer
+// Rediriger au clic sur Commencer
 btnStart.addEventListener('click', () => {
-  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
+  const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, prenomA, prenomB, destinataire, prenomC } = selections;
   
   if (produit === 'bio') {
     window.location.href = `/chat-bio.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
   } else if (produit === 'love') {
-    window.location.href = `/chat-love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
+    window.location.href = `/chat-love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}&prenomA=${encodeURIComponent(prenomA)}&prenomB=${encodeURIComponent(prenomB)}`;
   } else if (produit === 'hommage') {
-    window.location.href = `/chat-souv.html?type=${produit}&dest=${destinataire}`;
+    window.location.href = `/chat-souv.html?type=${produit}&dest=${destinataire}&prenomC=${encodeURIComponent(prenomC)}`;
   }
 });
+
+// Initialiser champs textes
+setupLovePrenoms();
+setupHommagePrenom();
 </script>
-</body>
-</html>
+
