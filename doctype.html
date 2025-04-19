@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LifeBook – Choix du parcours</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Outfit', sans-serif;
       margin: 0;
       background: linear-gradient(135deg, #d5b8ff, #ffdeeb);
       color: #333;
@@ -17,31 +19,47 @@
     .container {
       max-width: 700px;
       margin: auto;
-      background: white;
+      background: rgba(255, 255, 255, 0.85);
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      padding: 30px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+      padding: 40px 30px;
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.6s ease;
     }
     h1 {
       text-align: center;
-      color: #7e3af2;
+      color: #6a1acb;
+      font-weight: 600;
+      font-size: 1.9em;
     }
     .question {
       margin-bottom: 30px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.5s ease forwards;
     }
+    .question:nth-child(2) { animation-delay: 0.2s; }
+    .question:nth-child(3) { animation-delay: 0.4s; }
+    .question:nth-child(4) { animation-delay: 0.6s; }
+    .question:nth-child(5) { animation-delay: 0.8s; }
+    .question:nth-child(6) { animation-delay: 1s; }
+
     .question h2 {
-      font-size: 1.2em;
+      font-size: 1.15em;
       margin-bottom: 10px;
+      color: #444;
     }
+
     .options {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
+
     .option {
       flex: 1;
       min-width: 45%;
-      background: #f2e6ff;
+      background: white;
       padding: 14px 22px;
       border-radius: 16px;
       text-align: center;
@@ -49,33 +67,56 @@
       border: 2px solid transparent;
       transition: all 0.3s ease;
       font-size: 1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .option:hover,
-    .option.selected {
-      border-color: #7e3af2;
-      background: #e6d4ff;
+
+    .option:hover {
+      border-color: #8b5cf6;
       transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     }
+
+    .option.selected {
+      background: #ede9fe;
+      border-color: #7c3aed;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
     button {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(90deg, #7e3af2, #c084fc);
+      padding: 18px;
+      background: linear-gradient(90deg, #7c3aed, #a855f7);
       color: white;
       font-weight: 600;
       font-size: 1.1em;
       border: none;
-      border-radius: 16px;
+      border-radius: 18px;
       cursor: pointer;
-      margin-top: 30px;
-      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 35px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
     }
+
     button:hover:not(:disabled) {
       transform: translateY(-2px);
       background: linear-gradient(90deg, #6b21a8, #9333ea);
     }
+
     button:disabled {
-      background: #ccc;
+      background: #d6d3d1;
+      color: #888;
       cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -145,7 +186,11 @@
           group.forEach(o => o.classList.remove('selected'));
           opt.classList.add('selected');
           selections[key] = opt.dataset.value;
-          if (nextId) document.getElementById(nextId).style.display = 'block';
+          if (nextId) {
+            const next = document.getElementById(nextId);
+            next.style.display = 'block';
+            next.style.animation = 'fadeUp 0.4s ease forwards';
+          }
           checkIfReady();
         });
       });
@@ -166,7 +211,6 @@
 
     btnStart.addEventListener('click', () => {
       const { produit, qui, age, personne, format } = selections;
-
       if (produit === 'bio') {
         window.location.href = `/chat.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
       } else {
@@ -175,5 +219,4 @@
     });
   </script>
 </body>
-
 </html>
