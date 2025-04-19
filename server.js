@@ -3,7 +3,8 @@ import express from "express";
 console.log("👋 Démarrage de server.js...");
 
 import genererLivre from "./api/generer-livre.js";
-import genererLivreLove from "./api/generer-livre-love.js"; // 👈 AJOUT ICI
+import genererLivreLove from "./api/generer-livre-love.js";
+import genererLivreHommage from "./api/generer-livre-hommage.js"; // 👈 AJOUT
 import exporterPdf from "./api/exporter-pdf.js";
 
 // ✅ Liste des domaines autorisés
@@ -36,9 +37,11 @@ app.use((req, res, next) => {
 
 // ✅ Routes principales
 app.post("/api/generer-livre", genererLivre);
-app.post("/api/generer-livre-love", genererLivreLove); // 👈 AJOUT ICI
+app.post("/api/generer-livre-love", genererLivreLove);
+app.post("/api/generer-livre-hommage", genererLivreHommage); // 👈 AJOUT
 app.use("/api/exporter-pdf", exporterPdf);
 
+// ✅ Port dynamique
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Serveur démarré sur le port ${PORT}`);
