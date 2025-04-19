@@ -384,7 +384,7 @@ console.log("✅ Couverture détectée, génération du livre possible.");
     console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
 
     console.log("📤 Étape 2 : Envoi au backend...");
-    const response = await fetch(`${API_BASE}/api/generer-livre`, {
+    const response = await fetch(`${API_BASE}/api/generer-livre-love`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
