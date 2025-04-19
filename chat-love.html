@@ -602,17 +602,31 @@ function toggleRecording() {
     
 let sequenceParQuestion = [];
     
-async function chargerTemplateSequence({ type, qui, age, format }) {
-  const nomFichier = `./templates/${type}-${qui}-${age}-${format}.js`;
+async function chargerTemplateSequence({ type, vue, enfants, prenomA = "", prenomB = "" }) {
+  let fichierTemplate = `./templates/${type}-${vue}-${enfants}.js`;
+
   try {
-    const module = await import(nomFichier);
+    const module = await import(fichierTemplate);
     questions = module.questions || [];
     sequenceParQuestion = module.sequenceParQuestion || [];
-    titreChapitres = module.titreChapitres || {}; // ✅ on récupère aussi les titres
-    console.log("✅ Séquences chargées :", sequenceParQuestion);
-    console.log("✅ Titres de chapitres :", titreChapitres);
+    titreChapitres = module.titreChapitres || {};
+
+    console.log("✅ Template chargé :", fichierTemplate);
+
+    // Injecte prénoms
+    if (prenomA || prenomB) {
+      questions = questions.map(q => q.replace(/\${prenomA}/g, prenomA).replace(/\${prenomB}/g, prenomB));
+
+      for (const key in titreChapitres) {
+        titreChapitres[key] = titreChapitres[key]
+          .replace(/\${prenomA}/g, prenomA)
+          .replace(/\${prenomB}/g, prenomB);
+      }
+    }
+
   } catch (err) {
-    console.error("❌ Impossible de charger le template :", nomFichier, err);
+    console.error("❌ Impossible de charger le template :", fichierTemplate, err);
+    questions = [];
     sequenceParQuestion = [];
     titreChapitres = {};
   }
@@ -672,16 +686,18 @@ async function initChat() {
     interviewId = params.get("id");
 
     templateParams = {
-      type: params.get("type") || "bio",
-      qui: params.get("qui") || "moi",
-      age: params.get("age") || "18",
-      format: params.get("format") || "court",
+      type: params.get("type") || "love",   // Toujours love
+      vue: params.get("vue") || "",
+      enfants: params.get("enfants") || "",
+      prenomA: params.get("prenomA") || "",
+      prenomB: params.get("prenomB") || ""
     };
 
     await chargerTemplateSequence(templateParams);
     console.log("✅ Template chargé :", templateParams);
 
     if (interviewId) {
+      // S'il y a une interview existante sauvegardée, on la recharge
       const { data, error } = await supabase
         .from("responses")
         .select("content, params")
@@ -717,7 +733,7 @@ async function initChat() {
 
       if (questionIndex < questions.length) {
         const chapId = sequenceParQuestion[questionIndex] || 1;
-        if (chapId !== chapitreCourant && titreChapitres[chapId]) {
+        if (chapitreCourant !== chapId && titreChapitres[chapId]) {
           chapitreCourant = chapId;
           afficher("Chapitre", `**${titreChapitres[chapId]}**`, "bot chapitre");
         }
@@ -730,6 +746,7 @@ async function initChat() {
       }
 
     } else {
+      // NOUVELLE interview
       reponses = Array(questions.length).fill("");
       questionIndex = 0;
 
