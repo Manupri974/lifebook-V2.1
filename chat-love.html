@@ -373,14 +373,17 @@ console.log("✅ Couverture détectée, génération du livre possible.");
 
     console.log("✅ Segments reconstruits :", segments);
 
-    const payload = {
-      segments,
-      perso,
-      questions,
-      titreChapitres,
-      sequenceParQuestion
-    };
+   const params = new URLSearchParams(window.location.search);
 
+const payload = {
+  segments,
+  questions,
+  titreChapitres,
+  sequenceParQuestion,
+  vue: params.get("vue"),
+  prenomA: params.get("prenomA"),
+  prenomB: params.get("prenomB")
+};
     console.log("📦 Payload envoyé au backend :", JSON.stringify(payload, null, 2));
 
     console.log("📤 Étape 2 : Envoi au backend...");
