@@ -262,11 +262,13 @@ const btnStart = document.getElementById('btnStart');
 // Gestion sélection produits
 document.querySelectorAll('#q1 .option').forEach(opt => {
   opt.addEventListener('click', () => {
+    // RESET
     Object.keys(selections).forEach(key => delete selections[key]);
     document.querySelectorAll('.question').forEach(q => { if (q.id !== 'q1') q.style.display = 'none'; });
     document.querySelectorAll('.option, .option-small').forEach(o => o.classList.remove('selected'));
     btnStart.disabled = true;
 
+    // Choix produit
     opt.classList.add('selected');
     selections['produit'] = opt.dataset.value;
 
@@ -280,7 +282,7 @@ document.querySelectorAll('#q1 .option').forEach(opt => {
   });
 });
 
-// Fonction sélection questions
+// Fonction gestion réponses
 function handleSelection(groupSelector, nextId, key) {
   document.querySelectorAll(groupSelector).forEach(opt => {
     opt.addEventListener('click', () => {
@@ -295,6 +297,7 @@ function handleSelection(groupSelector, nextId, key) {
   });
 }
 
+// Lier questions aux fonctions
 handleSelection('#q2 .option-small', 'q3', 'qui');
 handleSelection('#q3 .option-small', 'q4', 'age');
 handleSelection('#q4 .option-small', 'q5', 'personne');
@@ -303,7 +306,7 @@ handleSelection('#qLove2 .option-small', 'qLove3', 'pointDeVueLove');
 handleSelection('#qLove3 .option-small', null, 'enfantsLove');
 handleSelection('#qHommage2 .option-small', null, 'destinataire');
 
-// Activation bouton
+// Activation bouton si tout est rempli
 function checkIfReady() {
   const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
   if ((produit === 'bio' && qui && age && personne && format) ||
@@ -313,18 +316,18 @@ function checkIfReady() {
   }
 }
 
-// Redirection
+// Clic bouton Commencer
 btnStart.addEventListener('click', () => {
   const { produit, qui, age, personne, format, pointDeVueLove, enfantsLove, destinataire } = selections;
+  
   if (produit === 'bio') {
-    window.location.href = `/chat.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
+    window.location.href = `/chat-bio.html?type=${produit}&qui=${qui}&age=${age}&perso=${personne}&format=${format}`;
   } else if (produit === 'love') {
-    window.location.href = `/love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
+    window.location.href = `/chat-love.html?type=${produit}&vue=${pointDeVueLove}&enfants=${enfantsLove}`;
   } else if (produit === 'hommage') {
-    window.location.href = `/hommage.html?type=${produit}&dest=${destinataire}`;
+    window.location.href = `/chat-souv.html?type=${produit}&dest=${destinataire}`;
   }
 });
 </script>
-
 </body>
 </html>
